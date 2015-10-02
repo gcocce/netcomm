@@ -1,5 +1,7 @@
 package basenetgame.common;
 
+import javax.swing.text.AbstractDocument.LeafElement;
+
 public class Packet {
 
 	public enum Tipo{DEFAULT, SOLICITA_CONEXION, ACEPTA_CONEXION, RECHAZA_CONEXION, CHAT, GAME_MOVE};
@@ -10,6 +12,12 @@ public class Packet {
 
 	String contenido;
 	int longitud;
+	
+	public Packet(){
+		this.tipo=Tipo.DEFAULT;
+		longitud=0;
+		contenido="";
+	}
 	
 	public Packet(Tipo tipo){
 		this.tipo=tipo;
@@ -34,5 +42,30 @@ public class Packet {
 		strp+=contenido;
 		
 		return strp;
+	}
+	
+	public String serialize(){
+		return this.toString();
+	}
+	
+	public boolean deserialize(String s){
+
+		try{
+			String header=s.substring(0, SIZE_HEADER);
+			
+			if (s.length()> SIZE_HEADER){
+				contenido=s.substring(SIZE_HEADER);
+				longitud=s.length();
+			}
+			
+			int ordinal=Integer.valueOf(header);
+			
+			tipo=Tipo.values()[ordinal];			
+		}catch(Exception e){
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
 	}
 }
