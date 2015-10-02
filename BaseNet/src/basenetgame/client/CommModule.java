@@ -16,6 +16,9 @@ public class CommModule {
 	
 	public boolean IniciarConexion(String host, int puerto){
 		
+		
+		
+		
 		// Si se conecta correctamente
 		pktmgr= new PacketManager();
 		pktmgr.addListener(gc);		

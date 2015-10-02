@@ -10,7 +10,8 @@ public class GameController extends Thread implements PacketListener{
 
 	@Override
 	public void OnPacketReceived(Packet p) {
-
+		
+		System.out.println("GameController llego paquete: " + p.toString());
 		
 	}
 }

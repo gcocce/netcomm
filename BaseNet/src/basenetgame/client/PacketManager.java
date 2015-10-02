@@ -40,7 +40,6 @@ public class PacketManager extends Thread {
 			// de paso a otro proceso o thread en este punto			
 			Thread.sleep(0);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
