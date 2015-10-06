@@ -25,6 +25,10 @@ public class Packet {
 		contenido="";
 	}
 	
+	public Tipo getType(){
+		return this.tipo;
+	}
+	
 	public void setContenido(String cont){
 		contenido=cont;
 		longitud=contenido.length();
