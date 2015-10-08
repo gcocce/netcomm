@@ -29,6 +29,7 @@ public class PacketManager extends Thread {
 			Packet p=receiver.receivePacket();
 					
 			while(p!=null){
+				
 				// Notify everybody that may be interested.
 		        for (PacketListener hl : listeners)
 		            hl.OnPacketReceived(p);

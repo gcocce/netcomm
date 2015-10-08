@@ -1,7 +1,5 @@
 package basenetgame.common;
 
-import javax.swing.text.AbstractDocument.LeafElement;
-
 public class Packet {
 
 	public enum Tipo{DEFAULT, SOLICITA_CONEXION, ACEPTA_CONEXION, RECHAZA_CONEXION, CHAT, GAME_MOVE};
