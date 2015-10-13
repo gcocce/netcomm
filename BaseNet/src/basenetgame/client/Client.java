@@ -4,17 +4,16 @@ public class Client{
 	
 	public static void main(String[] args) {
 		
+		// Creamos el Modelo
 		GameModel gameModel= new GameModel();
 		
+		// Creamos el GameView pasándole el Modelo como parámetro
 		GameView gameView= new GameView(gameModel);
 		
-		// GC: ¿Pasarle gamev como parametro al GameController?
-		GameController gamec=new GameController(gameModel);
-		
-		// GC: También podría haber un método addView en el GameController
-		// Si es que el controlador necesita la vista...		
-		gamec.addView(gameView);
-		
+		// Creamos el GameController pasándole el Modelo y la Vista como parámetros
+		GameController gamec=new GameController(gameModel, gameView);
+			
+		// Iniciamos el hilo del GameController
 		gamec.start();
 	}
 }

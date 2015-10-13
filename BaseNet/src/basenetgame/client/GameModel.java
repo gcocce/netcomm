@@ -7,9 +7,10 @@ public class GameModel {
 
 	private ArrayList<Message> chatMessages;
 	
-	private List<ChatReceivedListener> listeners = new ArrayList<ChatReceivedListener>();
+	// Lista de observadores del evento OnChatMessageReceived
+	private List<ChatMessageReceivedListener> listeners = new ArrayList<ChatMessageReceivedListener>();
 
-    public void addListener(ChatReceivedListener toAdd) {
+    public void addChatMessageReceivedListener(ChatMessageReceivedListener toAdd) {
         listeners.add(toAdd);
     }
 	
@@ -17,12 +18,12 @@ public class GameModel {
 		chatMessages=new ArrayList<Message>();
 	}
 	
+	
 	public void addMessage(Message m){
 		chatMessages.add(m);
 		
 		// Informar que hay un nuevo mensaje de chat a los observadores
-        for (ChatReceivedListener hl : listeners)
+        for (ChatMessageReceivedListener hl : listeners)
             hl.OnChatMessageReceived(m);	
-        
 	}
 }

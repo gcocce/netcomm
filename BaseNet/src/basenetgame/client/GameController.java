@@ -3,28 +3,30 @@ package basenetgame.client;
 import basenetgame.common.ChatPacket;
 import basenetgame.common.Packet;
 
-//GC: ¿Por qué tiene que ser un Thread el GameController?
-public class GameController extends Thread implements PacketListener, ChatCreatedListener{
+// GC: ¿Por qué tiene que ser un Thread el GameController? 
+// GC: Porqué el programa principal termina luego de generar los objetos,
+// y estos dejarían de existir si al menos uno de ellos no continúa ejecutandose
+// con las referencias de los otros para que el Recolector de Basura de Java no los elimine.
+public class GameController extends Thread implements PacketListener, ChatMessageCreatedListener{
 
 	private GameModel gameModel;
 	private GameView gameView;
 	private CommModule comModule;
 	private boolean continuar;
 	
-	public GameController(GameModel gm){
+	public GameController(GameModel gm, GameView gv){
 		
 		this.gameModel=gm;
+		this.gameView=gv;
 		
-		//Creamos el Módulo de Comunicaciones
+		// Agregamos el Controlador como Observador de la Vista para el evento
+		// OnChatCreated
+		gameView.addChatMessageCreatedListener(this);
+		
+		// Creamos el Módulo de Comunicaciones
 		comModule = new CommModule(this);
 		
 		continuar=true;
-	}
-	
-	public void addView(GameView gv){
-		gameView=gv;
-		
-		gameView.addListener(this);
 	}
 	
 	private boolean initComm(String host, int puerto){
@@ -64,24 +66,33 @@ public class GameController extends Thread implements PacketListener, ChatCreate
 		continuar=false;
 	}
 
+	// Cuando el Módulo de comunicación recibe un paquete por la red genera este evento.
+	// El GameController captura el evento y debe decidir 
+	// que hacer aquí según el tipo de paquete.
 	@Override
 	public void OnPacketReceived(Packet p) {
 		
 		// Debug
 		System.out.println("GameController llego paquete: " + p.toString());
 		
+		// Si el paquete es de tipo CHAT agregamos el Mensaje al GameModel
 		if(p.getType()==Packet.Tipo.CHAT){
 			ChatPacket cp=(ChatPacket)p;
 			Message m=new Message(cp.getUser(), cp.getMessage());
 			gameModel.addMessage(m);
 		}
 		
+		
 		if(p.getType()==Packet.Tipo.GAME_MOVE){
 
-		}		
+		}
 		
+		// TODO: Completar con otros tipos de paquetes
 	}
 
+	// OnChatMessageCreated se ejecuta cuando el usuario genera un nuevo
+	// mensaje de chat en el cliente.
+	// El controlador captura este evento y pasa el mensaje al Modulo de Comunicación.
 	@Override
 	public void OnChatMessageCreated(Message m) {
 		comModule.enviarMensajeChat(m);

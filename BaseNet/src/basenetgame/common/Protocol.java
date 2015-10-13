@@ -12,10 +12,10 @@ public class Protocol {
 	
 	String error;
 	
-	//TODO: Agregar variables para controlar la comunicación
+	// TODO: Agregar variables para controlar la comunicación
 	// Ejemplos: 
-	//	claves para encriptar la comunicación
-	//	numeración de los paquetes (si se quiere controlar una secuencia)
+	// claves para encriptar la comunicación
+	// numeración de los paquetes (si se quiere controlar una secuencia)
 	
 	public Protocol(){
 		error="";

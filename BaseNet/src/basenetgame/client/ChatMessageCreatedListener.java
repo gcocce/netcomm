@@ -1,5 +1,5 @@
 package basenetgame.client;
 
-public interface ChatCreatedListener {
+public interface ChatMessageCreatedListener {
 	void OnChatMessageCreated(Message m);
 }

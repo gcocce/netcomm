@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class GameView extends Thread implements ChatReceivedListener {
+public class GameView extends Thread implements ChatMessageReceivedListener {
 
 	private GameModel gameModel;
 	Scanner scanner;
 	
-	private List<ChatCreatedListener> listeners = new ArrayList<ChatCreatedListener>();	
+	// Lista de observadores del evento OnChatMessageCreated
+	private List<ChatMessageCreatedListener> listeners = new ArrayList<ChatMessageCreatedListener>();	
 	
-    public void addListener(ChatCreatedListener toAdd) {
+    public void addChatMessageCreatedListener(ChatMessageCreatedListener toAdd) {
         listeners.add(toAdd);
     }
     
@@ -21,7 +22,7 @@ public class GameView extends Thread implements ChatReceivedListener {
 		scanner = new Scanner(System.in);
 		
 		// Agregamos la vista como observador del modelo en lo que respecta a los mensajes de chat
-		gameModel.addListener(this);
+		gameModel.addChatMessageReceivedListener(this);
 	}
 	
 	public void run(){
@@ -52,7 +53,7 @@ public class GameView extends Thread implements ChatReceivedListener {
 		Message msg=new Message("cliente",s);
 		
 		// Informar que el usuario creo un mensaje de chat a los observadores
-        for (ChatCreatedListener hl : listeners)
+        for (ChatMessageCreatedListener hl : listeners)
             hl.OnChatMessageCreated(msg);
 	}
 }

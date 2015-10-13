@@ -1,6 +1,6 @@
 package basenetgame.client;
 
-public interface ChatReceivedListener {
+public interface ChatMessageReceivedListener {
 	
 	void OnChatMessageReceived(Message m);
 }
