@@ -15,6 +15,8 @@ public class GameModel {
     }
 	
 	public GameModel (){
+		System.out.println("GameModel. Se crea el Modelo.");
+		
 		chatMessages=new ArrayList<Message>();
 	}
 	

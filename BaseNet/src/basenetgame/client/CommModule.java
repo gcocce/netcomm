@@ -22,6 +22,9 @@ public class CommModule {
 	PacketManager pktmgr;
 	
 	public CommModule(GameController g){
+		
+		System.out.println("GommModule. Se crea el Módulo de Comunicaciones.");
+		
 		estado=Estado.DEFAULT;
 		socket=null;
 		sender=null;
@@ -35,16 +38,24 @@ public class CommModule {
 		try {
 			// Se intenta crear el socket para establecer la conexión
 			socket = new Socket(host, puerto);
-			
-	        // Muestra la dirección remota de la conexión con el servidor
-	        System.out.println("Socket creado contra " + socket.getRemoteSocketAddress());				
+
 		} catch (UnknownHostException e) {
+			
+			System.out.println("CommModule. Servidor desconocido: " + e.getMessage());
+			
 			e.printStackTrace();
 		} catch (IOException e) {
+			
+			System.out.println("CommModule. Error al solicitar la conexion: " + e.getMessage());
+			
 			e.printStackTrace();
 		}
         
 		if (socket!=null){
+
+			// Muestra la dirección remota de la conexión con el servidor
+			System.out.println("CommModule. Socket creado: " + socket.getRemoteSocketAddress());
+			
 			// Usar el Protocolo para establecer la conexion 
 			// y luego crear el sender y el receiver
 			
@@ -86,6 +97,9 @@ public class CommModule {
 	
 	public void cerrarConexion(){
 		if (socket!=null){
+			
+			System.out.println("CommModule. Se cierra el Socket.");
+			
 			try {
 				socket.close();
 			} catch (IOException e) {

@@ -17,6 +17,9 @@ public class GameView extends Thread implements ChatMessageReceivedListener {
     }
     
 	public GameView(GameModel gm){
+		
+		System.out.println("GameView. Se crea la Vista.");
+		
 		this.gameModel=gm;
 		
 		scanner = new Scanner(System.in);

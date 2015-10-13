@@ -4,6 +4,8 @@ public class Client{
 	
 	public static void main(String[] args) {
 		
+		System.out.println("Se inicia el cliente.");
+		
 		// Creamos el Modelo
 		GameModel gameModel= new GameModel();
 		

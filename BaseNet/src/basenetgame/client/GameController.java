@@ -16,6 +16,8 @@ public class GameController extends Thread implements PacketListener, ChatMessag
 	
 	public GameController(GameModel gm, GameView gv){
 		
+		System.out.println("GameController. Se crea el controlador.");
+		
 		this.gameModel=gm;
 		this.gameView=gv;
 		
@@ -42,19 +44,26 @@ public class GameController extends Thread implements PacketListener, ChatMessag
 	
 
 	public void run(){
+		
+		System.out.println("GameController. Se intenta iniciar la conexión...");
+		
+		// Iniciamos la conexión con el servidor
+		if (!initComm("localhost",5000)){
+			continuar=false;
+		}
+		
 		do{
-			
-			// Iniciamos la conexión con el servidor
-			if (!initComm("localhost",5000)){
-				System.out.println("Error en la conexión...");
-			}
-			
+
 			try {			
 				// Sleep de 0 milisegundos para dejar que el sistema operativo
 				// de paso a otro proceso o thread en este punto
 				Thread.sleep(0);
+				
+				
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+				
+				continuar=false;
 			}
 			
 		}while(continuar);
@@ -75,7 +84,7 @@ public class GameController extends Thread implements PacketListener, ChatMessag
 	public void OnPacketReceived(Packet p) {
 		
 		// Debug
-		System.out.println("GameController llego paquete: " + p.toString());
+		System.out.println("GameController. Llego paquete: " + p.toString());
 		
 		// Si el paquete es de tipo CHAT agregamos el Mensaje al GameModel
 		if(p.getType()==Packet.Tipo.CHAT){
@@ -90,6 +99,8 @@ public class GameController extends Thread implements PacketListener, ChatMessag
 		}
 		
 		// TODO: Completar con otros tipos de paquetes
+		
+		
 	}
 
 	// OnChatMessageCreated se ejecuta cuando el usuario genera un nuevo
