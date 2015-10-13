@@ -21,6 +21,10 @@ public class Protocol {
 		error="";
 	}
 	
+	public String getError(){
+		return error;
+	}
+	
 	// Devuelve true si la conexión es aceptada por el servidor
 	// Devuelve false si el servidor no acepta la conexión, 
 	// en este último caso se guarda el mensaje de error en el atributo error

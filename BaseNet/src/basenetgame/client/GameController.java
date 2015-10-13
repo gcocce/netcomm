@@ -29,7 +29,9 @@ public class GameController extends Thread implements PacketListener, ChatMessag
 		continuar=true;
 	}
 	
-	private boolean initComm(String host, int puerto){
+	// Este método tiene que ser usado por la vista para iniciar la comunicación
+	// con el servidor
+	public boolean initComm(String host, int puerto){
 		
 		if (comModule.iniciarConexion( host, puerto)){
 			return true;

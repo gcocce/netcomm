@@ -6,8 +6,8 @@ import java.util.Scanner;
 
 public class Server {
 
-	static ServerSocket ss=null;
-	static GateKeeper gk=null;
+	static ServerSocket serversocket=null;
+	static GateKeeper gatekeeper=null;
 	
 	public static void main(String[] args) {
 		
@@ -17,12 +17,11 @@ public class Server {
 		if (puerto>1000 && puerto<65000){
 			
 			try {
-				ss=new ServerSocket(puerto);
+				serversocket=new ServerSocket(puerto);
 				
-				gk=new GateKeeper(ss);
-				gk.start();
+				gatekeeper=new GateKeeper(serversocket);
+				gatekeeper.start();
 				
-
 				Scanner teclado=new Scanner(System.in);
 				
 				// Capturar lo que se ingresa por teclado y finalizar al recibir la palabra "terminar"
@@ -38,28 +37,27 @@ public class Server {
 						cerrar();
 					}
 				}
+				
+				teclado.close();
+				
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}else{
 			System.out.println("El puerto ingresado está fuera del rango permitido.");
 		}
-
 	}
 	
 	private static void cerrar(){
-		// Matar el thread gk
+		// Matar el thread del gatekeeper
 		
-		gk.interrupt();
+		gatekeeper.interrupt();
 		
 		try {
-			gk.join();
+			gatekeeper.join();
 			
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
-
 }

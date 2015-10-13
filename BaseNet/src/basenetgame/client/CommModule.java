@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 
 import basenetgame.common.ChatPacket;
 import basenetgame.common.Packet;
+import basenetgame.common.Protocol;
 import basenetgame.common.Receiver;
 import basenetgame.common.Sender;
 
@@ -36,7 +37,7 @@ public class CommModule {
 			socket = new Socket(host, puerto);
 			
 	        // Muestra la dirección remota de la conexión con el servidor
-	        System.out.println("Conectado a " + socket.getRemoteSocketAddress());				
+	        System.out.println("Socket creado contra " + socket.getRemoteSocketAddress());				
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -44,30 +45,46 @@ public class CommModule {
 		}
         
 		if (socket!=null){
-			// Si se conecta correctamente creamos el PacketManager
+			// Usar el Protocolo para establecer la conexion 
+			// y luego crear el sender y el receiver
 			
-			receiver=new Receiver(socket);
-			receiver.start();
+			Protocol prot=new Protocol();
 			
-			sender=new Sender(socket);
-			sender.start();
-			
-			// TODO: Debería recibir el socket o un receiver
-			pktmgr= new PacketManager(receiver);
-			pktmgr.addListener(gc);		
-			pktmgr.start();
-			
-			estado=Estado.CONECTADO;
-			
-			return true;
+			if (prot.SolicitarConexion(socket)){
+				// Si se conecta correctamente creamos el PacketManager
+				
+				receiver=new Receiver(socket);
+				receiver.start();
+				
+				sender=new Sender(socket);
+				sender.start();
+				
+				pktmgr= new PacketManager(receiver);
+				pktmgr.addListener(gc);		
+				pktmgr.start();
+				
+				estado=Estado.CONECTADO;
+				
+				System.out.println("Conexión aceptada.");
+				
+				return true;
+			}else{
+				estado=Estado.ERROR_CONEXION;
+				
+				System.out.println("Conexión no aceptada: " +  prot.getError());	
+				
+				return false;
+			}
 		}else{
 			estado=Estado.ERROR_CONEXION;
+			
+			System.out.println("No se pudo crear el Socket. Compruebe el host y el puerto.");	
+			
 			return false;
 		}
 	}
 	
 	public void cerrarConexion(){
-		
 		if (socket!=null){
 			try {
 				socket.close();
@@ -92,5 +109,4 @@ public class CommModule {
 	public void enviarPacket(Packet p){
 		sender.sendPacket(p);
 	}
-	
 }

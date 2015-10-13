@@ -16,19 +16,17 @@ public class GateKeeper extends Thread{
 	
 	public void run(){
 		
-		
 		while (!detener){
 		
 			try {
-				
+				// El GateKeeper se bloquea en este punto esperando conexiones entrantes
 				Socket s= ss.accept();
 				
-				// 
-				
-				
-				
-				
-				
+				// Luego de recibir una conexión creamos un Gestor para la Conexión
+				ConnectionHandler conHandler=new ConnectionHandler(s);
+			
+				// Iniciamos el Gestor para que resuelva que hacer con la conexión
+				conHandler.start();
 				
 			} catch (IOException e) {
 				e.printStackTrace();
