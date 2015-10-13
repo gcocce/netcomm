@@ -7,6 +7,7 @@ import java.util.Scanner;
 public class Server {
 
 	static ServerSocket serversocket=null;
+	
 	static GateKeeper gatekeeper=null;
 	
 	public static void main(String[] args) {
@@ -14,32 +15,42 @@ public class Server {
 		boolean continuar=true;
 		int puerto = Integer.parseInt(args[0]);
 		
+		System.out.println("Se inicia el Servidor con puerto: " + puerto);
+		
 		if (puerto>1000 && puerto<65000){
 			
 			try {
 				serversocket=new ServerSocket(puerto);
 				
-				gatekeeper=new GateKeeper(serversocket);
-				gatekeeper.start();
-				
-				Scanner teclado=new Scanner(System.in);
-				
-				// Capturar lo que se ingresa por teclado y finalizar al recibir la palabra "terminar"
-				while (continuar){
+				if (serversocket!=null){
+					System.out.println("ServerSocket creado con puerto: " + puerto);
+					
+					gatekeeper=new GateKeeper(serversocket);
+					
+					gatekeeper.start();
+					
+					Scanner teclado=new Scanner(System.in);
+					
+					// Capturar lo que se ingresa por teclado y finalizar al recibir la palabra "terminar"
+					while (continuar){
 
-					String comando = null;
-					
-					comando=teclado.nextLine();
-					
-					if (comando.compareTo("salir")==0){
-						System.out.println("Intenta salir");
-						continuar=false;
-						cerrar();
+						String comando = null;
+						
+						comando=teclado.nextLine();
+						
+						if (comando.compareTo("salir")==0){
+							System.out.println("Se inicia la finalización del Servidor...");
+							continuar=false;
+							cerrarServidor();
+						}
 					}
+					
+					teclado.close();
+					
+				}else{
+					System.out.println("Error al crear el socket en el puerto: " + puerto);
 				}
-				
-				teclado.close();
-				
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -48,16 +59,30 @@ public class Server {
 		}
 	}
 	
-	private static void cerrar(){
-		// Matar el thread del gatekeeper
+	private static void cerrarServidor(){
 		
-		gatekeeper.interrupt();
+		//TODO: Finalizar todos los procesos pendientes (GateKeeper, GameHandlers, Senders, Receivers)
 		
-		try {
-			gatekeeper.join();
+		
+		if (gatekeeper!=null){
 			
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			// Matar el thread del gatekeeper
+			try {
+				gatekeeper.Detener();
+				
+				// Se cierra el ServerSocket para forzar la finalizacion del GateKeeper
+				serversocket.close();
+				
+				// Esperamos que finalice el Thread del GateKeeper
+				gatekeeper.join();
+				
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}catch (InterruptedException e) {
+				e.printStackTrace();
+			}			
 		}
+		
+		System.out.println("Servidor Finalizado.");
 	}
 }

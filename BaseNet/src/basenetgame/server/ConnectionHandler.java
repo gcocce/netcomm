@@ -12,7 +12,6 @@ public class ConnectionHandler extends Thread {
 		this.s=s;
 	}
 	
-	
 	// Buscar si hay lugar en alguna sala o juego o crear uno y agregarlo a la lista junto con el cliente
 	public void run(){
 		
@@ -24,17 +23,19 @@ public class ConnectionHandler extends Thread {
 		
 		if (prot.AceptarConexion(s)){
 			
+			System.out.println("ConnectionHandler. Conexión aceptada.");
+			
 			// Crear un Cliente y agregar el objeto en alguna Sala
 			ClientHandler cHandler= new ClientHandler(s);
 			
 			// TODO: Agregar el Gestor del Cliente a una Sala
-			
+	
 			
 			// TODO: REMOVER. Momentaneamente cerramos la conexión aquí
 			cHandler.closeConnection();
 			
 		}else{
-			System.out.println("Conexión no aceptada: " +  prot.getError());
+			System.out.println("ConnectionHandler. Conexión no aceptada: " +  prot.getError());
 		}
 	}
 }
