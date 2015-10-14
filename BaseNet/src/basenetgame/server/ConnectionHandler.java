@@ -6,10 +6,12 @@ import basenetgame.common.Protocol;
 
 public class ConnectionHandler extends Thread {
 
-	Socket s;
+	Socket socket;
+	GameHandler gamehandler;
 	
-	public ConnectionHandler(Socket s){
-		this.s=s;
+	public ConnectionHandler(Socket s, GameHandler gHandler){
+		this.gamehandler=gHandler;
+		this.socket=s;
 	}
 	
 	// Buscar si hay lugar en alguna sala o juego o crear uno y agregarlo a la lista junto con el cliente
@@ -21,19 +23,15 @@ public class ConnectionHandler extends Thread {
 		
 		Protocol prot=new Protocol();
 		
-		if (prot.AceptarConexion(s)){
+		if (prot.AceptarConexion(socket)){
 			
 			System.out.println("ConnectionHandler. Conexión aceptada.");
 			
 			// Crear un Cliente y agregar el objeto en alguna Sala
-			ClientHandler cHandler= new ClientHandler(s);
-			
-			// TODO: Agregar el Gestor del Cliente a una Sala
-	
-			
-			// TODO: REMOVER. Momentaneamente cerramos la conexión aquí
-			cHandler.closeConnection();
-			
+			ClientHandler cHandler= new ClientHandler(socket);
+
+			// Agregamos el cliente a la sala
+			gamehandler.addClient(cHandler);
 		}else{
 			System.out.println("ConnectionHandler. Conexión no aceptada: " +  prot.getError());
 		}

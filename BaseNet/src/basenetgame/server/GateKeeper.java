@@ -7,11 +7,13 @@ import java.net.SocketException;
 
 public class GateKeeper extends Thread{
 
-	ServerSocket ss;
+	ServerSocket serversocket;
+	GameHandler gamehandler;
 	boolean detener;
 	
-	public GateKeeper(ServerSocket ss){
-		this.ss=ss;
+	public GateKeeper(ServerSocket sSocket, GameHandler gHandler){
+		this.serversocket=sSocket;
+		this.gamehandler=gHandler;
 		detener=false;
 	}
 	
@@ -23,12 +25,12 @@ public class GateKeeper extends Thread{
 		
 			try {
 				// El GateKeeper se bloquea en este punto esperando conexiones entrantes
-				Socket s= ss.accept();
+				Socket socket= serversocket.accept();
 				
-				System.out.println("GateKeeper. Se recibe una conexión: " + s.getRemoteSocketAddress());
+				System.out.println("GateKeeper. Se recibe una conexión: " + socket.getRemoteSocketAddress());
 				
 				// Luego de recibir una conexión creamos un Gestor para la Conexión
-				ConnectionHandler conHandler=new ConnectionHandler(s);
+				ConnectionHandler conHandler=new ConnectionHandler(socket, gamehandler);
 			
 				// Iniciamos el Gestor para que resuelva que hacer con la conexión
 				conHandler.start();
@@ -45,7 +47,7 @@ public class GateKeeper extends Thread{
 		System.out.println("Finaliza el GateKeeper");
 	}
 	
-	public void Detener(){
+	public void finish(){
 		detener=true;
 	}
 }

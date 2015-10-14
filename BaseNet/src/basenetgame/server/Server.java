@@ -20,6 +20,8 @@ public class Server {
 	
 	static GateKeeper gatekeeper=null;
 	
+	static GameHandler gameHandler=null;
+	
 	public static void main(String[] args) {
 		
 		boolean continuar=true;
@@ -35,9 +37,7 @@ public class Server {
 				if (serversocket!=null){
 					System.out.println("ServerSocket creado con puerto: " + puerto);
 					
-					gatekeeper=new GateKeeper(serversocket);
-					
-					gatekeeper.start();
+					iniciarServidor(serversocket);
 					
 					Scanner teclado=new Scanner(System.in);
 					
@@ -69,16 +69,27 @@ public class Server {
 		}
 	}
 	
+	private static void iniciarServidor(ServerSocket serversocket){
+		
+		gameHandler=new GameHandler();
+		
+		gameHandler.start();
+		
+		gatekeeper=new GateKeeper(serversocket, gameHandler);
+		
+		gatekeeper.start();
+	}
+	
 	private static void cerrarServidor(){
 		
 		//TODO: Finalizar todos los procesos pendientes (GateKeeper, GameHandlers, Senders, Receivers)
-		
+		gameHandler.finish();
 		
 		if (gatekeeper!=null){
 			
 			// Matar el thread del gatekeeper
 			try {
-				gatekeeper.Detener();
+				gatekeeper.finish();
 				
 				// Se cierra el ServerSocket para forzar la finalizacion del GateKeeper
 				serversocket.close();
