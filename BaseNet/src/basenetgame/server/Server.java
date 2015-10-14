@@ -4,6 +4,16 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Scanner;
 
+/* Para ejecutar desde la consola:
+ * 
+ * Ir al directorio bin
+ * 
+ * Y usar el siguiente comando:
+ * 
+ * java basenetgame.server.Server Puerto  
+ * 
+ * (Donde Puerto es un número mayor a 1000 y menor a 65000) 
+ * */
 public class Server {
 
 	static ServerSocket serversocket=null;

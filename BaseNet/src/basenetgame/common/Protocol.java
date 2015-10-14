@@ -12,7 +12,7 @@ public class Protocol {
 	
 	String error;
 	
-	// TODO: Agregar variables para controlar la comunicación
+	// Agregar variables para controlar la comunicación
 	// Ejemplos: 
 	// claves para encriptar la comunicación
 	// numeración de los paquetes (si se quiere controlar una secuencia)
@@ -25,11 +25,12 @@ public class Protocol {
 		return error;
 	}
 	
-	// Devuelve true si la conexión es aceptada por el servidor
-	// Devuelve false si el servidor no acepta la conexión, 
-	// en este último caso se guarda el mensaje de error en el atributo error
+	// Devuelve true si se cumple el protocolo y la conexión es aceptada por el servidor
+	// Devuelve false si no se cumple le protocolo o el servidor no acepta la conexión,
+	// En todos los casos casos se guarda el mensaje de error en el atributo error
 	public boolean SolicitarConexion(Socket s){
 		
+		// Creamos un paquete de tipo RequestConnection
 		RequestConnectionPacket rcp=new RequestConnectionPacket();
 		
 		if (s==null){
@@ -37,23 +38,94 @@ public class Protocol {
 			return false;
 		}
 		
-		try {
-			// TODO: Aqui hay que hacer uso de los metodos enviar y recibir paquete
-			// Enviamos el paquete
-			OutputStream os=s.getOutputStream();
-			DataOutputStream outs = new DataOutputStream(os);
-			outs.writeUTF(rcp.toString()); 
-
-			// Se espera recibir un paquete
-			InputStream is = s.getInputStream();
-	        DataInputStream ins = new DataInputStream(is);
-	         
-	        // Comprobamos el tipo del paquete que se recibe
-	        String resp=ins.readUTF();
-	        
-	        System.out.print(resp);
-	        
+		if(!EnviarPaquete(s, rcp)){
 			
+			error="Se produjo un error al enviar el paquete de Solicitud de la Conexión.";
+			return false;
+		} 
+
+		// Se espera recibir un paquete de tipo AcceptConnection o RejectConnection
+		Packet p=RecibirPaquete(s);
+		System.out.println(p.toString());
+
+		// Comprobamos si el cliente envía el paquete esperado
+		if (p.tipo==Packet.Tipo.ACEPTA_CONEXION){
+			
+			System.out.println("Se recibe un paquete de tipo ACEPTA CONEXION");
+			return true;
+		}
+			
+		// Comprobamos si el cliente envía el paquete esperado
+		if (p.tipo==Packet.Tipo.RECHAZA_CONEXION){
+			
+			RejectConnectionPacket rjcp=(RejectConnectionPacket)p;
+			
+			error=rjcp.getMotivo();
+			
+			return false;
+		}
+
+		error="El Servidor no responde de acuerdo al protocolo";
+		
+		return false;
+	}
+	
+	
+	// Devuelve true si se cumple con el protocolo, false en otro caso
+	public boolean AceptarConexion(Socket s){
+		
+		// Se espera recibir un paquete RequestConnection
+		Packet p=RecibirPaquete(s);
+		System.out.println(p.toString());
+
+		// Comprobamos si el cliente envía el paquete esperado
+		if (p.tipo!=Packet.Tipo.SOLICITA_CONEXION){
+			
+			// Enviamos el paquete de RECHAZO de la conexión			
+			RejectConnectionPacket rp= new RejectConnectionPacket("No cumple con el protocolo!");
+			EnviarPaquete(s, rp);
+			
+			System.out.println("El paquete recibido no es es del tipo SOLICITA CONEXION");			
+			
+			return false;
+		}else{
+			System.out.println("Se recibe un paquete de tipo SOLICITA CONEXION");
+			
+			// Enviamos el paquete de ACEPTACIÓN de la conexión
+			AcceptConnectionPacket acp=new AcceptConnectionPacket();
+			
+			if (EnviarPaquete(s, acp)){
+				return true;
+			}else{
+				System.out.println("Se produjo un error inesperado al Aceptar la Conexión");
+				return false;
+			}	
+		}
+	}
+	
+	public void RechazarConexion(Socket s, String motivo){
+		
+		// Se espera recibir un paquete RequestConnection
+		Packet p=RecibirPaquete(s);
+		System.out.println(p.toString());
+
+		// Comprobamos si el cliente envía el paquete esperado
+		if (p.tipo!=Packet.Tipo.SOLICITA_CONEXION){
+			System.out.println("El paquete no es es del tipo SOLICITA CONEXION");
+		}
+
+		// Se envía un paquete de tipo RejectConnection
+		RejectConnectionPacket rp= new RejectConnectionPacket(motivo);
+		EnviarPaquete(s, rp);
+	}	
+
+	public boolean EnviarPaquete(Socket s, Packet p){
+		
+		// Enviamos el paquete
+		try {
+			OutputStream os = s.getOutputStream();
+			DataOutputStream outs = new DataOutputStream(os);
+			outs.writeUTF(p.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
@@ -62,75 +134,22 @@ public class Protocol {
 		return true;
 	}
 	
-	public boolean AceptarConexion(Socket s){
-		
-        try {		
-        	// TODO: Aqui hay que hacer uso de los metodos enviar y recibir paquete
-			// Se espera recibir un paquete
-			InputStream is = s.getInputStream();
-	        DataInputStream ins = new DataInputStream(is);
-         
-	        // Comprobamos el tipo del paquete que se recibe
-
-			String resp=ins.readUTF();
-			
-			System.out.println(resp);
-			
-			// TODO: Comprobamos el paquete
-			
-			// Enviamos el paquete de ACEPTACIÓN O RECHAZO de conexión
-			AcceptConnectionPacket acp=new AcceptConnectionPacket();
-			OutputStream os=s.getOutputStream();
-			DataOutputStream outs = new DataOutputStream(os);
-			outs.writeUTF(acp.toString()); 				
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}		
-		
-		return true;
-	}
-	
-	public boolean RechazarConexion(Socket s, String motivo){
-		RejectConnectionPacket rp= new RejectConnectionPacket(motivo);
-
-		try {
-			// TODO: Aqui hay que hacer uso de los metodos enviar y recibir paquete
-			
-			// Se espera recibir un paquete
-			InputStream is = s.getInputStream();
-	        DataInputStream ins = new DataInputStream(is);
-			String resp=ins.readUTF();
-			
-			System.out.println(resp);
-			
-			// Enviamos el paquete de rechazo de conexión
-			OutputStream os=s.getOutputStream();
-			DataOutputStream outs = new DataOutputStream(os);
-			outs.writeUTF(rp.toString()); 			
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}		
-		
-		
-		return true;
-	}	
-
-	public boolean EnviarPaquete(Socket s, Packet p){
-		
-		
-		
-		return true;
-	}
-	
 	public Packet RecibirPaquete(Socket s){
 	
-		
-		return null;
+		try {
+			
+			InputStream is = s.getInputStream();
+	        DataInputStream ins = new DataInputStream(is);
+			String packetString=ins.readUTF();
+
+			Packet p=new Packet();
+			
+			p.deserialize(packetString);
+
+			return p;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}	
 	}	
 }

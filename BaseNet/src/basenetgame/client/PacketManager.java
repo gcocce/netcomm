@@ -19,6 +19,9 @@ public class PacketManager extends Thread {
     
 	// Genera eventos cuando llegan paquetes
 	public PacketManager(Receiver rc){
+		
+		System.out.println("PacketManager. Se inicia el PacketManager.");
+		
 		receiver=rc;		
 	}
 	

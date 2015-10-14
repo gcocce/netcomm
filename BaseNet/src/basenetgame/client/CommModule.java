@@ -35,6 +35,8 @@ public class CommModule {
 	
 	public boolean iniciarConexion(String host, int puerto){
 		
+		System.out.println("CommModule. Se inicia conexión con host: "+ host + " y puerto: " + puerto);
+		
 		try {
 			// Se intenta crear el socket para establecer la conexión
 			socket = new Socket(host, puerto);
@@ -62,6 +64,9 @@ public class CommModule {
 			Protocol prot=new Protocol();
 			
 			if (prot.SolicitarConexion(socket)){
+				
+				System.out.println("Conexión aceptada.");	
+				
 				// Si se conecta correctamente creamos el PacketManager
 				
 				receiver=new Receiver(socket);
@@ -75,8 +80,6 @@ public class CommModule {
 				pktmgr.start();
 				
 				estado=Estado.CONECTADO;
-				
-				System.out.println("Conexión aceptada.");
 				
 				return true;
 			}else{
