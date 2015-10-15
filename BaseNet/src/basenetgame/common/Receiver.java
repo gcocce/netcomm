@@ -1,32 +1,60 @@
 package basenetgame.common;
 
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Receiver extends Thread{
 
-	Socket s;
-	// Agregar collection
+	Socket socket;
+	Protocol protocol;
+	
+	// Agregar collection para guardar temporalmente los paquetes recibidos
+	ArrayList<Packet> paquetes;
+	
+	// Indica si el thread debe seguir trabajando
+	boolean continuar;
 	
 	public Receiver (Socket s){
-		this.s=s;
+		continuar=true;
+		
+		this.socket=s;
+		protocol = new Protocol();
+		
+		paquetes= new ArrayList<Packet>();
 	}
 	
-	public Packet receivePacket(){
+	public synchronized Packet receivePacket(){
 		// Si hay paquetes en la collection devolver el paquete sino devolver null
-		// Bloquear la collection
-		
-		
-		return null;
+
+		if(!paquetes.isEmpty()){
+			return paquetes.get(0);
+		}else{
+			return null;	
+		}		
 	}
+	
+	private synchronized void addPacket(Packet packet){
+		// Agregar el paquete a la collection
+		
+		paquetes.add(packet);
+	}
+	
+	public void finish(){
+		continuar=false;
+	}	
 	
 	public void run(){
 
 	
 		try {
-			// Si se puede recibir algo agregar el paquete a la collection (bloquear recurso)
-			
-			
-			
+
+			Packet packet = protocol.RecibirPaquete(socket);
+			while (continuar && packet!=null){
+				
+				addPacket(packet);
+				
+				packet = protocol.RecibirPaquete(socket);	
+			}
 			
 			// Sleep de 0 milisegundos para dejar que el sistema operativo
 			// de paso a otro proceso o thread en este punto

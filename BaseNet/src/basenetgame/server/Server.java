@@ -69,6 +69,8 @@ public class Server {
 		}
 	}
 	
+	// En este método se inicializan todos los objetos y threads usados por el servidor 
+	// (GateKeeper, GameHandlers)
 	private static void iniciarServidor(ServerSocket serversocket){
 		
 		gameHandler=new GameHandler();
@@ -80,11 +82,11 @@ public class Server {
 		gatekeeper.start();
 	}
 	
+	// En este método se finalizan todos los objetos y threads usados por el servidor
+	// (GateKeeper, GameHandlers)
 	private static void cerrarServidor(){
 		
-		//TODO: Finalizar todos los procesos pendientes (GateKeeper, GameHandlers, Senders, Receivers)
-		gameHandler.finish();
-		
+
 		if (gatekeeper!=null){
 			
 			// Matar el thread del gatekeeper
@@ -103,6 +105,17 @@ public class Server {
 				e.printStackTrace();
 			}			
 		}
+		
+		if (gameHandler!=null){
+			
+			try {
+				gameHandler.finish();
+				
+				gameHandler.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}		
 		
 		System.out.println("Servidor Finalizado.");
 	}

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.channels.IllegalBlockingModeException;
 import java.util.logging.Logger;
 
 public class Protocol {
@@ -70,7 +71,6 @@ public class Protocol {
 		return false;
 	}
 	
-	
 	// Devuelve true si se cumple con el protocolo, false en otro caso
 	public boolean AceptarConexion(Socket s){
 		
@@ -121,12 +121,15 @@ public class Protocol {
 
 	public boolean EnviarPaquete(Socket s, Packet p){
 		
-		// Enviamos el paquete
+		// En esta sección la ejecución se bloquea hasta que el paquete haya sido enviado
 		try {
 			OutputStream os = s.getOutputStream();
 			DataOutputStream outs = new DataOutputStream(os);
 			outs.writeUTF(p.toString());
 		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		} catch (IllegalBlockingModeException e){
 			e.printStackTrace();
 			return false;
 		}
@@ -135,9 +138,9 @@ public class Protocol {
 	}
 	
 	public Packet RecibirPaquete(Socket s){
-	
+
+		// En esta sección la ejecución se bloquea hasta que se haya recibido un paquete
 		try {
-			
 			InputStream is = s.getInputStream();
 	        DataInputStream ins = new DataInputStream(is);
 			String packetString=ins.readUTF();
@@ -150,6 +153,10 @@ public class Protocol {
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
-		}	
+		}catch (IllegalBlockingModeException e){
+			e.printStackTrace();
+			return null;
+		}
+		
 	}	
 }

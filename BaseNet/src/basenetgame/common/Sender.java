@@ -1,35 +1,67 @@
 package basenetgame.common;
 
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Sender extends Thread{
-	Socket s;
 	
-	// agregar collection
+	Socket socket;
+	Protocol protocol;
 	
-	
+	// Agregar Collection para guardar temporalmente los paquetes a enviar
+	ArrayList<Packet> paquetes;
+
+	// Indica si el thread debe seguir trabajando
+	boolean continuar;
+
 	public Sender (Socket s){
-		this.s=s;
+		continuar=true;
+		
+		this.socket=s;
+		protocol = new Protocol();
+		
+		paquetes= new ArrayList<Packet>();
 	}
 	
-	public void sendPacket(Packet p){
+	public synchronized void sendPacket(Packet packet){
 		//Agregar paquete a la collection
-		// Este metodo debe bloquear el recurso
 		
+		paquetes.add(packet);
+	}
+	
+	private synchronized Packet getPacket(){
+		
+		if(!paquetes.isEmpty()){
+			return paquetes.get(0);
+		}else{
+			return null;	
+		}
+	}
+	
+	public void finish(){
+		continuar=false;
 	}
 	
 	public void run(){
 
-	
 		try {
-			//Si hay paquetes en la colection obtenerlo y enviarlo
-			// Aquì se debe bloquear el recurso
-			
-			
-			
-			// Sleep de 0 milisegundos para dejar que el sistema operativo
-			// de paso a otro proceso o thread en este punto
-			Thread.sleep(0);
+
+			while(continuar){
+				
+				//Si hay paquetes en la colection obtenerlo usando el método getPacket() y enviarlo
+				Packet packet=getPacket();
+				while(continuar && packet!=null){
+					
+					// Enviar el paquete
+					protocol.EnviarPaquete(socket, packet);
+					
+					packet=getPacket();
+				}
+
+				// Sleep de 0 milisegundos para dejar que el sistema operativo
+				// de paso a otro proceso o thread en este punto
+				Thread.sleep(0);
+			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

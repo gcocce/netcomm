@@ -20,6 +20,11 @@ public class GameHandler extends Thread{
 
 	
 	public void finish(){
+
+		continuar=false;
+		
+		System.out.println("GameHandler. Se inicia el cierre del GameHandler");
+		
 		// Cerramos la conexion de los clientes
 		for(int x=0; x < listaClientes.size(); x++) {
 			
@@ -27,14 +32,15 @@ public class GameHandler extends Thread{
 			
 			cHandler.closeConnection();
 		}		
-		
-		continuar=false;
 	}
 	
 	public void run(){
 		
-		
 		while(continuar){
+			
+			
+			
+			
 			
 			
 			
