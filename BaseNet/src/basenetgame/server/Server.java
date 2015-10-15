@@ -103,7 +103,7 @@ public class Server {
 				e1.printStackTrace();
 			}catch (InterruptedException e) {
 				e.printStackTrace();
-			}			
+			}
 		}
 		
 		if (gameHandler!=null){

@@ -2,6 +2,8 @@ package basenetgame.server;
 
 import java.util.ArrayList;
 
+import basenetgame.common.Packet;
+
 public class GameHandler extends Thread{
 	
 	private ArrayList<ClientHandler> listaClientes;
@@ -38,10 +40,19 @@ public class GameHandler extends Thread{
 		
 		while(continuar){
 			
-			
-			
-			
-			
+			// Comprobar si hay paquetes ¿de qué manera?
+			for(int x=0; x < listaClientes.size(); x++) {
+				
+				ClientHandler cHandler= listaClientes.get(x);
+				
+				Packet packet=cHandler.getPacket();
+				while(packet!=null){
+					
+					procesarPacket(packet, x);
+					
+					packet=cHandler.getPacket();
+				}
+			}			
 			
 			
 			try {
@@ -52,6 +63,19 @@ public class GameHandler extends Thread{
 				e.printStackTrace();
 			}			
 		}
+	}
+	
+	public void procesarPacket(Packet packet, int clientPos){
+
+		// En principio reenviamos todos lo paquetes a los clientes que forman parte del juego
+		for(int x=0; x < listaClientes.size(); x++) {
+			
+			ClientHandler cHandler= listaClientes.get(x);
+			
+			if (x != clientPos){
+				cHandler.sendPacket(packet);	
+			}
+		}		
 	}
 
 }

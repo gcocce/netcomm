@@ -3,6 +3,7 @@ package basenetgame.server;
 import java.io.IOException;
 import java.net.Socket;
 
+import basenetgame.common.Packet;
 import basenetgame.common.Receiver;
 import basenetgame.common.Sender;
 
@@ -12,7 +13,6 @@ public class ClientHandler {
 	private Socket socket;
 	private Sender sender;
 	private Receiver receiver;
-	
 	
 	public ClientHandler(Socket s){
 		this.socket=s;
@@ -25,6 +25,14 @@ public class ClientHandler {
 		receiver= new Receiver(socket);
 		
 		receiver.start();
+	}
+	
+	public Packet getPacket(){
+		return receiver.receivePacket();
+	}
+	
+	public void sendPacket(Packet packet){
+		sender.sendPacket(packet);
 	}
 	
 	// En este método que se debe llamar obligatoriamente cerramos todos los recursos utilizados por el ClientHandler
