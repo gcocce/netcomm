@@ -48,6 +48,7 @@ public class GameView extends Thread implements ChatMessageReceivedListener {
 
 	@Override
 	public void OnChatMessageReceived(Message m) {
+		
 		System.out.println("Chat recibido: "+ m.getMessage());
 	}
 	

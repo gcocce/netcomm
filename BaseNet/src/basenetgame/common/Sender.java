@@ -26,6 +26,8 @@ public class Sender extends Thread{
 	public synchronized void sendPacket(Packet packet){
 		//Agregar paquete a la collection
 		
+		System.out.println("Sender. sendPacet contenido: " + packet.getContenido());
+		
 		paquetes.add(packet);
 	}
 	

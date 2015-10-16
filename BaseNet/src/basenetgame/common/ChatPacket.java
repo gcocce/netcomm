@@ -17,4 +17,8 @@ public class ChatPacket extends Packet {
 	public String getUser(){
 		return "Somebody";
 	}
+	
+	public void deserializar(String contenido){
+		super.setContenido(contenido);
+	}
 }

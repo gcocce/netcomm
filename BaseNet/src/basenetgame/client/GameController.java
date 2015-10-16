@@ -105,8 +105,6 @@ public class GameController extends Thread implements PacketListener, ChatMessag
 			
 			ChatPacket cp=(ChatPacket)p;
 			
-			//TODO: deserializar el paquete invocando al método que corresponda al tipo de paquete
-			
 			Message m=new Message(cp.getUser(), cp.getMessage());
 			gameModel.addMessage(m);
 		}

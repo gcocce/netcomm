@@ -32,6 +32,10 @@ public class Packet {
 		longitud=contenido.length();
 	}
 	
+	public String getContenido(){
+		return contenido;
+	}
+	
 	public String toString(){
 		String strp="";
 		
