@@ -11,6 +11,8 @@ public class PacketManager extends Thread {
 
 	Receiver receiver;
 	
+	boolean continuar;
+	
 	private List<PacketListener> listeners = new ArrayList<PacketListener>();
 
     public void addListener(PacketListener toAdd) {
@@ -22,27 +24,38 @@ public class PacketManager extends Thread {
 		
 		System.out.println("PacketManager. Se inicia el PacketManager.");
 		
-		receiver=rc;		
+		receiver=rc;
+		
+		continuar=true;
+	}
+	
+	public void finish(){
+		continuar=false;
 	}
 	
 	public void run(){
 
 		try {
-			// Obtener paquetes del receiver y despachar
-			Packet p=receiver.receivePacket();
-					
-			while(p!=null){
-				
-				// Notify everybody that may be interested.
-		        for (PacketListener hl : listeners)
-		            hl.OnPacketReceived(p);
-		        
-		        p=receiver.receivePacket();
-			}
 			
-			// Sleep de 0 milisegundos para dejar que el sistema operativo
-			// de paso a otro proceso o thread en este punto			
-			Thread.sleep(0);
+			while(continuar){
+				// Obtener paquetes del receiver y despachar
+				Packet p=receiver.receivePacket();
+						
+				while(p!=null){
+					
+					System.out.println("PacketManager. Paquete recibido.");
+					
+					// Notify everybody that may be interested.
+			        for (PacketListener hl : listeners)
+			            hl.OnPacketReceived(p);
+			        
+			        p=receiver.receivePacket();
+				}
+				
+				// Sleep de 0 milisegundos para dejar que el sistema operativo
+				// de paso a otro proceso o thread en este punto			
+				Thread.sleep(0);
+			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

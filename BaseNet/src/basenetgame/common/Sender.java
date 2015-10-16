@@ -32,7 +32,8 @@ public class Sender extends Thread{
 	private synchronized Packet getPacket(){
 		
 		if(!paquetes.isEmpty()){
-			return paquetes.get(0);
+			
+			return paquetes.remove(0);
 		}else{
 			return null;	
 		}
@@ -52,8 +53,12 @@ public class Sender extends Thread{
 				Packet packet=getPacket();
 				while(continuar && packet!=null){
 					
+					System.out.println("Sender. Se envía un paquete por la red.");
+					
 					// Enviar el paquete
 					protocol.EnviarPaquete(socket, packet);
+					
+					System.out.println("Sender. Paquete enviado.");
 					
 					packet=getPacket();
 				}

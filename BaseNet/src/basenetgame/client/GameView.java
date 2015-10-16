@@ -44,7 +44,6 @@ public class GameView extends Thread implements ChatMessageReceivedListener {
 			
 		}while(seguir);
 		
-
 	}
 
 	@Override

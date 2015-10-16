@@ -17,4 +17,9 @@ public class Message {
 	public String getUser(){
 		return user;
 	}
+	
+	public String toString(){
+		
+		return user+message;
+	}
 }

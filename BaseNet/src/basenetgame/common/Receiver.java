@@ -27,7 +27,8 @@ public class Receiver extends Thread{
 		// Si hay paquetes en la collection devolver el paquete sino devolver null
 
 		if(!paquetes.isEmpty()){
-			return paquetes.get(0);
+			
+			return paquetes.remove(0);
 		}else{
 			return null;	
 		}		
@@ -51,10 +52,14 @@ public class Receiver extends Thread{
 			Packet packet = protocol.RecibirPaquete(socket);
 			while (continuar && packet!=null){
 				
+				System.out.println("Receiver. Paquete recibido.");
+				
 				addPacket(packet);
 				
 				packet = protocol.RecibirPaquete(socket);	
 			}
+			
+			System.out.println("Receiver. Termina el proceso.");
 			
 			// Sleep de 0 milisegundos para dejar que el sistema operativo
 			// de paso a otro proceso o thread en este punto

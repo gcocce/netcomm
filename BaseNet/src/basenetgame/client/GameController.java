@@ -1,5 +1,7 @@
 package basenetgame.client;
 
+import java.util.Scanner;
+
 import basenetgame.common.ChatPacket;
 import basenetgame.common.Packet;
 
@@ -52,21 +54,33 @@ public class GameController extends Thread implements PacketListener, ChatMessag
 			continuar=false;
 		}
 		
-		do{
+		while(continuar){
+			try {
 
-			try {			
+				
+				Scanner teclado=new Scanner(System.in);
+				
+				// Capturar lo que se ingresa por teclado y finalizar al recibir la palabra "terminar"
+				while (continuar){
+
+					String chatStr = null;
+					
+					chatStr=teclado.nextLine();
+
+					Message msg=new Message("Cliente", chatStr);
+					
+					comModule.enviarMensajeChat(msg);
+				}				
+				
 				// Sleep de 0 milisegundos para dejar que el sistema operativo
 				// de paso a otro proceso o thread en este punto
 				Thread.sleep(0);
-				
-				
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				
 				continuar=false;
 			}
-			
-		}while(continuar);
+		}
 		
 		// Cerrar el módulo de comunicaciones y todo lo que haga falta
 		comModule.cerrarConexion();
@@ -88,7 +102,11 @@ public class GameController extends Thread implements PacketListener, ChatMessag
 		
 		// Si el paquete es de tipo CHAT agregamos el Mensaje al GameModel
 		if(p.getType()==Packet.Tipo.CHAT){
+			
 			ChatPacket cp=(ChatPacket)p;
+			
+			//TODO: deserializar el paquete invocando al método que corresponda al tipo de paquete
+			
 			Message m=new Message(cp.getUser(), cp.getMessage());
 			gameModel.addMessage(m);
 		}

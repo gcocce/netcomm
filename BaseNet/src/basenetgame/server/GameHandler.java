@@ -48,6 +48,8 @@ public class GameHandler extends Thread{
 				Packet packet=cHandler.getPacket();
 				while(packet!=null){
 					
+					System.out.println("GameHandler. Paquete recibido.");
+					
 					procesarPacket(packet, x);
 					
 					packet=cHandler.getPacket();
@@ -73,6 +75,9 @@ public class GameHandler extends Thread{
 			ClientHandler cHandler= listaClientes.get(x);
 			
 			if (x != clientPos){
+				
+				System.out.println("GameHandler. Se reenvía un paquete al cliente " + x);
+				
 				cHandler.sendPacket(packet);	
 			}
 		}		

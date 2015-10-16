@@ -99,6 +99,23 @@ public class CommModule {
 	}
 	
 	public void cerrarConexion(){
+		
+		sender=null;
+		receiver=null;
+		pktmgr=null;
+		
+		if(sender!=null){
+			sender.finish();
+		}
+		
+		if(receiver!=null){
+			receiver.finish();
+		}
+		
+		if(pktmgr!=null){
+			pktmgr.finish();
+		}
+		
 		if (socket!=null){
 			
 			System.out.println("CommModule. Se cierra el Socket.");
@@ -109,6 +126,8 @@ public class CommModule {
 				e.printStackTrace();
 			}
 		}
+		
+		
 	}
 	
 	public Estado getEstado(){
@@ -117,10 +136,14 @@ public class CommModule {
 	
 	public void enviarMensajeChat(Message m){
 		
+		System.out.println("Se envía un mensaje de chat.");
+		
 		ChatPacket cp=new ChatPacket();
 		cp.setMessage(m.getMessage());
 		
 		enviarPacket(cp);
+		
+		System.out.println("Paquete agregado al sender");
 	}
 	
 	public void enviarPacket(Packet p){
