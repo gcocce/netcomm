@@ -19,30 +19,30 @@ public class Packet {
 	
 	public Packet(Tipo tipo){
 		this.tipo=tipo;
-		longitud=0;
-		contenido="";
+		this.longitud=0;
+		this.contenido="";
 	}
 	
 	public Tipo getType(){
 		return this.tipo;
 	}
 	
-	public void setContenido(String cont){
-		contenido=cont;
-		longitud=contenido.length();
+	public void setContenido(String contenido){
+		this.contenido=contenido;
+		this.longitud=contenido.length();
 	}
 	
 	public String getContenido(){
 		return contenido;
 	}
 	
-	public String toString(){
+	public String serialize(){
 		String strp="";
 		
 		int tp=tipo.ordinal();
 		
 		String formatted_header = String.format("%0"+SIZE_HEADER+"d", tp);
-		
+
 		strp=formatted_header;
 		
 		strp+=contenido;
@@ -50,8 +50,8 @@ public class Packet {
 		return strp;
 	}
 	
-	public String serialize(){
-		return this.toString();
+	public String toString(){
+		return this.serialize();
 	}
 	
 	public boolean deserialize(String s){

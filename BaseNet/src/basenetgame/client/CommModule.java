@@ -140,6 +140,7 @@ public class CommModule {
 		
 		ChatPacket cp=new ChatPacket();
 		cp.setMessage(m.getMessage());
+		cp.setUser(m.getUser());
 		
 		enviarPacket(cp);
 		

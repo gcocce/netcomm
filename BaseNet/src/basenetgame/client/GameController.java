@@ -67,9 +67,11 @@ public class GameController extends Thread implements PacketListener, ChatMessag
 					
 					chatStr=teclado.nextLine();
 
-					Message msg=new Message("Cliente", chatStr);
+					Message msg=new Message(gameModel.getUserName(), chatStr);
 					
 					comModule.enviarMensajeChat(msg);
+					
+					gameView.mostrarMensaje(msg);
 				}				
 				
 				// Sleep de 0 milisegundos para dejar que el sistema operativo
@@ -106,6 +108,7 @@ public class GameController extends Thread implements PacketListener, ChatMessag
 			ChatPacket cp=(ChatPacket)p;
 			
 			Message m=new Message(cp.getUser(), cp.getMessage());
+			
 			gameModel.addMessage(m);
 		}
 		

@@ -9,6 +9,8 @@ public class Client{
 		// Creamos el Modelo
 		GameModel gameModel= new GameModel();
 		
+		gameModel.setUserName(args[args.length-1]);
+		
 		// Creamos el GameView pasándole el Modelo como parámetro
 		GameView gameView= new GameView(gameModel);
 		

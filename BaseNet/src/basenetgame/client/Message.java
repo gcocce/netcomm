@@ -18,8 +18,4 @@ public class Message {
 		return user;
 	}
 	
-	public String toString(){
-		
-		return user+message;
-	}
 }

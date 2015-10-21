@@ -5,7 +5,6 @@ import java.util.List;
 
 import basenetgame.common.ChatPacket;
 import basenetgame.common.Packet;
-import basenetgame.common.Packet.Tipo;
 import basenetgame.common.Receiver;
 
 public class PacketManager extends Thread {

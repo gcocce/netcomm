@@ -7,6 +7,7 @@ import java.util.Scanner;
 public class GameView extends Thread implements ChatMessageReceivedListener {
 
 	private GameModel gameModel;
+	
 	Scanner scanner;
 	
 	// Lista de observadores del evento OnChatMessageCreated
@@ -49,14 +50,23 @@ public class GameView extends Thread implements ChatMessageReceivedListener {
 	@Override
 	public void OnChatMessageReceived(Message m) {
 		
-		System.out.println("Chat recibido: "+ m.getMessage());
+		mostrarMensaje(m);
 	}
 	
-	public void buildChatMessage(String s){
-		Message msg=new Message("cliente",s);
+	public void buildChatMessage(String message){
+		
+		Message msg=new Message(gameModel.getUserName(), message);
 		
 		// Informar que el usuario creo un mensaje de chat a los observadores
         for (ChatMessageCreatedListener hl : listeners)
             hl.OnChatMessageCreated(msg);
+        
+        mostrarMensaje(msg);
 	}
+	
+	public void mostrarMensaje(Message m){
+		
+		System.out.println("CHAT | " + m.getUser() + " : " + m.getMessage());
+	}
+	
 }
