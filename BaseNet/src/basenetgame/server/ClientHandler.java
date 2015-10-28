@@ -2,6 +2,7 @@ package basenetgame.server;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 import basenetgame.common.Packet;
 import basenetgame.common.Receiver;
@@ -38,7 +39,8 @@ public class ClientHandler {
 	// En este método que se debe llamar obligatoriamente cerramos todos los recursos utilizados por el ClientHandler
 	public void closeConnection(){
 		
-		System.out.println("ClientHandler. Se inicia el cierre del ClientHandler.");
+		Logger logger = Logger.getLogger("ServerLog");  
+		logger.info("Se inicia el cierre del ClientHandler.");
 		
 		try {
 			socket.close();

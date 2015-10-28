@@ -3,6 +3,9 @@ package basenetgame.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Scanner;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 /* Para ejecutar desde la consola:
  * 
@@ -25,9 +28,38 @@ public class Server {
 	public static void main(String[] args) {
 		
 		boolean continuar=true;
+		
+		if (args.length<1){
+			System.out.println("\nFaltan parametros. Se esperaba el número de puerto!");
+			return;
+		}
+		
 		int puerto = Integer.parseInt(args[0]);
 		
-		System.out.println("Se inicia el Servidor con puerto: " + puerto);
+		//***********************************************************************
+		// Establecemos un log
+		Logger logger = Logger.getLogger("ServerLog");  
+	    FileHandler fh;  
+
+	    try {  
+
+	    	// Archivo de salida del log
+	        fh = new FileHandler("ServerLog.log");  
+	        logger.addHandler(fh);
+	        // Formato de las lineas
+	        SimpleFormatter formatter = new SimpleFormatter();  
+	        fh.setFormatter(formatter);
+	        
+	        // Para que no escriba en la consola
+	        logger.setUseParentHandlers(false);
+
+	    } catch (SecurityException e) {  
+	        e.printStackTrace();  
+	    } catch (IOException e) {  
+	        e.printStackTrace();  
+	    }  
+
+	    logger.info("Se inicia el Servidor con puerto: " + puerto);
 		
 		if (puerto>1000 && puerto<65000){
 			
@@ -35,7 +67,9 @@ public class Server {
 				serversocket=new ServerSocket(puerto);
 				
 				if (serversocket!=null){
-					System.out.println("ServerSocket creado con puerto: " + puerto);
+
+					System.out.println("Server iniciado con puerto: " + puerto);
+					logger.info("ServerSocket creado con puerto: " + puerto);
 					
 					iniciarServidor(serversocket);
 					
@@ -49,7 +83,10 @@ public class Server {
 						comando=teclado.nextLine();
 						
 						if (comando.compareTo("salir")==0){
+							
 							System.out.println("Se inicia la finalización del Servidor...");
+							logger.info("Se inicia la finalización del Servidor...");
+							
 							continuar=false;
 							cerrarServidor();
 						}
@@ -58,7 +95,7 @@ public class Server {
 					teclado.close();
 					
 				}else{
-					System.out.println("Error al crear el socket en el puerto: " + puerto);
+					logger.severe("Error al crear el socket en el puerto: " + puerto);
 				}
 
 			} catch (IOException e) {
@@ -66,6 +103,7 @@ public class Server {
 			}
 		}else{
 			System.out.println("El puerto ingresado está fuera del rango permitido.");
+			logger.severe("El puerto ingresado está fuera del rango permitido.");
 		}
 	}
 	

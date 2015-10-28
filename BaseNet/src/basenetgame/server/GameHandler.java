@@ -1,6 +1,7 @@
 package basenetgame.server;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import basenetgame.common.Packet;
 
@@ -25,7 +26,8 @@ public class GameHandler extends Thread{
 
 		continuar=false;
 		
-		System.out.println("GameHandler. Se inicia el cierre del GameHandler");
+		Logger logger = Logger.getLogger("ServerLog");  
+		logger.info("Se inicia el cierre del GameHandler");
 		
 		// Cerramos la conexion de los clientes
 		for(int x=0; x < listaClientes.size(); x++) {
@@ -48,7 +50,8 @@ public class GameHandler extends Thread{
 				Packet packet=cHandler.getPacket();
 				while(packet!=null){
 					
-					System.out.println("GameHandler. Paquete recibido.");
+					Logger logger = Logger.getLogger("ServerLog");  
+					logger.info("GameHandler. Paquete recibido.");
 					
 					procesarPacket(packet, x);
 					
@@ -76,7 +79,8 @@ public class GameHandler extends Thread{
 			
 			if (x != clientPos){
 				
-				System.out.println("GameHandler. Se reenvía un paquete al cliente " + x);
+				Logger logger = Logger.getLogger("ServerLog");  
+				logger.info("GameHandler. Se reenvía un paquete al cliente " + x);				
 				
 				cHandler.sendPacket(packet);	
 			}

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.logging.Logger;
 
 public class GateKeeper extends Thread{
 
@@ -19,7 +20,8 @@ public class GateKeeper extends Thread{
 	
 	public void run(){
 		
-		System.out.println("GateKeeper iniciado. Escuchando conexiones...");
+		Logger logger = Logger.getLogger("ServerLog");  
+		logger.info("GateKeeper iniciado. Escuchando conexiones...");
 		
 		while (!detener){
 		
@@ -28,6 +30,7 @@ public class GateKeeper extends Thread{
 				Socket socket= serversocket.accept();
 				
 				System.out.println("GateKeeper. Se recibe una conexión: " + socket.getRemoteSocketAddress());
+				logger.info("Se recibe una conexión: " + socket.getRemoteSocketAddress());
 				
 				// Luego de recibir una conexión creamos un Gestor para la Conexión
 				ConnectionHandler conHandler=new ConnectionHandler(socket, gamehandler);
@@ -36,15 +39,14 @@ public class GateKeeper extends Thread{
 				conHandler.start();
 				
 			}catch (SocketException se){
-				System.out.println("GateKeeper. Error en el ServerSocket: "+ se.getMessage());
+				logger.severe("GateKeeper. Error en el ServerSocket: "+ se.getMessage());
 			} catch (IOException e) {
-				//e.printStackTrace();
-				System.out.println("GateKeeper. Error al aceptar conexion: "+ e.getMessage());
+				logger.severe("GateKeeper. Error al aceptar conexion: "+ e.getMessage());
 				detener=true;
 			} 
 		}
 		
-		System.out.println("Finaliza el GateKeeper");
+		logger.info("Finaliza el GateKeeper");
 	}
 	
 	public void finish(){
