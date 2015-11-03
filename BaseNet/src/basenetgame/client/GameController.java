@@ -1,6 +1,7 @@
 package basenetgame.client;
 
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 import basenetgame.common.ChatPacket;
 import basenetgame.common.Packet;
@@ -17,8 +18,6 @@ public class GameController extends Thread implements PacketListener, ChatMessag
 	private boolean continuar;
 	
 	public GameController(GameModel gm, GameView gv){
-		
-		System.out.println("GameController. Se crea el controlador.");
 		
 		this.gameModel=gm;
 		this.gameView=gv;
@@ -47,7 +46,8 @@ public class GameController extends Thread implements PacketListener, ChatMessag
 
 	public void run(){
 		
-		System.out.println("GameController. Se intenta iniciar la conexión...");
+		Logger logger = Logger.getLogger("ClientLog");  
+		logger.info("GameController. Se intenta iniciar la conexión...");		
 		
 		// Iniciamos la conexión con el servidor
 		if (!initComm("localhost",5000)){
@@ -100,7 +100,9 @@ public class GameController extends Thread implements PacketListener, ChatMessag
 	public void OnPacketReceived(Packet p) {
 		
 		// Debug
-		System.out.println("GameController. Llego paquete: " + p.toString());
+		Logger logger = Logger.getLogger("ClientLog");  
+		logger.info("Llego paquete: " + p.toString());		
+		
 		
 		// Si el paquete es de tipo CHAT agregamos el Mensaje al GameModel
 		if(p.getType()==Packet.Tipo.CHAT){

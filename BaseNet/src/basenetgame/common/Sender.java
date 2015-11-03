@@ -26,7 +26,7 @@ public class Sender extends Thread{
 	public synchronized void sendPacket(Packet packet){
 		//Agregar paquete a la collection
 		
-		System.out.println("Sender. sendPacet contenido: " + packet.getContenido());
+		//System.out.println("Sender. sendPacet contenido: " + packet.getContenido());
 		
 		paquetes.add(packet);
 	}
@@ -55,12 +55,12 @@ public class Sender extends Thread{
 				Packet packet=getPacket();
 				while(continuar && packet!=null){
 					
-					System.out.println("Sender. Se envía un paquete por la red.");
+					//System.out.println("Sender. Se envía un paquete por la red.");
 					
 					// Enviar el paquete
 					protocol.EnviarPaquete(socket, packet);
 					
-					System.out.println("Sender. Paquete enviado.");
+					//System.out.println("Sender. Paquete enviado.");
 					
 					packet=getPacket();
 				}

@@ -3,6 +3,7 @@ package basenetgame.client;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 public class GameView extends Thread implements ChatMessageReceivedListener {
 
@@ -19,7 +20,9 @@ public class GameView extends Thread implements ChatMessageReceivedListener {
     
 	public GameView(GameModel gm){
 		
-		System.out.println("GameView. Se crea la Vista.");
+		Logger logger = Logger.getLogger("ClientLog");  
+		logger.info("Se crea la Vista.");			
+		
 		
 		this.gameModel=gm;
 		

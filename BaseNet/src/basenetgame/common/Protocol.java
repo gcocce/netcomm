@@ -47,12 +47,12 @@ public class Protocol {
 
 		// Se espera recibir un paquete de tipo AcceptConnection o RejectConnection
 		Packet p=RecibirPaquete(s);
-		System.out.println(p.toString());
+		//System.out.println(p.toString());
 
 		// Comprobamos si el cliente envía el paquete esperado
 		if (p.tipo==Packet.Tipo.ACEPTA_CONEXION){
 			
-			System.out.println("Se recibe un paquete de tipo ACEPTA CONEXION");
+			//System.out.println("Se recibe un paquete de tipo ACEPTA CONEXION");
 			return true;
 		}
 			
@@ -76,7 +76,7 @@ public class Protocol {
 		
 		// Se espera recibir un paquete RequestConnection
 		Packet p=RecibirPaquete(s);
-		System.out.println(p.toString());
+		//System.out.println(p.toString());
 
 		// Comprobamos si el cliente envía el paquete esperado
 		if (p.tipo!=Packet.Tipo.SOLICITA_CONEXION){
@@ -85,11 +85,11 @@ public class Protocol {
 			RejectConnectionPacket rp= new RejectConnectionPacket("No cumple con el protocolo!");
 			EnviarPaquete(s, rp);
 			
-			System.out.println("El paquete recibido no es es del tipo SOLICITA CONEXION");			
+			error="El paquete recibido no es es del tipo SOLICITA CONEXION";			
 			
 			return false;
 		}else{
-			System.out.println("Se recibe un paquete de tipo SOLICITA CONEXION");
+			//System.out.println("Se recibe un paquete de tipo SOLICITA CONEXION");
 			
 			// Enviamos el paquete de ACEPTACIÓN de la conexión
 			AcceptConnectionPacket acp=new AcceptConnectionPacket();
@@ -97,7 +97,7 @@ public class Protocol {
 			if (EnviarPaquete(s, acp)){
 				return true;
 			}else{
-				System.out.println("Se produjo un error inesperado al Aceptar la Conexión");
+				error="Se produjo un error inesperado al Aceptar la Conexión";
 				return false;
 			}	
 		}
@@ -111,7 +111,7 @@ public class Protocol {
 
 		// Comprobamos si el cliente envía el paquete esperado
 		if (p.tipo!=Packet.Tipo.SOLICITA_CONEXION){
-			System.out.println("El paquete no es es del tipo SOLICITA CONEXION");
+			error="El paquete no es es del tipo SOLICITA CONEXION";
 		}
 
 		// Se envía un paquete de tipo RejectConnection

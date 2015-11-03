@@ -2,6 +2,7 @@ package basenetgame.client;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class GameModel {
 	
@@ -20,7 +21,8 @@ public class GameModel {
 		
 		this.UserName="";
 		
-		System.out.println("GameModel. Se crea el Modelo.");
+		Logger logger = Logger.getLogger("ClientLog");  
+		logger.info("Se crea el Modelo.");			
 		
 		chatMessages=new ArrayList<Message>();
 	}

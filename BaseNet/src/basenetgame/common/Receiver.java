@@ -45,14 +45,11 @@ public class Receiver extends Thread{
 	}	
 	
 	public void run(){
-
 	
 		try {
 
 			Packet packet = protocol.RecibirPaquete(socket);
 			while (continuar && packet!=null){
-				
-				System.out.println("Receiver. Paquete recibido.");
 				
 				addPacket(packet);
 				

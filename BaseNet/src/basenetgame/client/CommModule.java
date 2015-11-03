@@ -3,6 +3,7 @@ package basenetgame.client;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.logging.Logger;
 
 import basenetgame.common.ChatPacket;
 import basenetgame.common.Packet;
@@ -23,8 +24,6 @@ public class CommModule {
 	
 	public CommModule(GameController g){
 		
-		System.out.println("GommModule. Se crea el Módulo de Comunicaciones.");
-		
 		estado=Estado.DEFAULT;
 		socket=null;
 		sender=null;
@@ -35,7 +34,8 @@ public class CommModule {
 	
 	public boolean iniciarConexion(String host, int puerto){
 		
-		System.out.println("CommModule. Se inicia conexión con host: "+ host + " y puerto: " + puerto);
+		Logger logger = Logger.getLogger("ClientLog");  
+		logger.info("Se inicia la conexion con Server: " + host + " Puerto: " + puerto);		
 		
 		try {
 			// Se intenta crear el socket para establecer la conexión
@@ -43,12 +43,13 @@ public class CommModule {
 
 		} catch (UnknownHostException e) {
 			
-			System.out.println("CommModule. Servidor desconocido: " + e.getMessage());
+			logger.severe("CommModule. Servidor desconocido: " + e.getMessage());		
+
 			
 			e.printStackTrace();
 		} catch (IOException e) {
 			
-			System.out.println("CommModule. Error al solicitar la conexion: " + e.getMessage());
+			logger.severe("CommModule. Error al solicitar la conexion: " + e.getMessage());
 			
 			e.printStackTrace();
 		}
@@ -56,7 +57,8 @@ public class CommModule {
 		if (socket!=null){
 
 			// Muestra la dirección remota de la conexión con el servidor
-			System.out.println("CommModule. Socket creado: " + socket.getRemoteSocketAddress());
+			System.out.println("Socket creado: " + socket.getRemoteSocketAddress());
+			logger.severe("Socket creado: " + socket.getRemoteSocketAddress());
 			
 			// Usar el Protocolo para establecer la conexion 
 			// y luego crear el sender y el receiver
@@ -136,15 +138,13 @@ public class CommModule {
 	
 	public void enviarMensajeChat(Message m){
 		
-		System.out.println("Se envía un mensaje de chat.");
+		//System.out.println("Se envía un mensaje de chat: " + m.getMessage());
 		
 		ChatPacket cp=new ChatPacket();
 		cp.setMessage(m.getMessage());
 		cp.setUser(m.getUser());
 		
 		enviarPacket(cp);
-		
-		System.out.println("Paquete agregado al sender");
 	}
 	
 	public void enviarPacket(Packet p){

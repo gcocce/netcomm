@@ -2,6 +2,7 @@ package basenetgame.client;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import basenetgame.common.ChatPacket;
 import basenetgame.common.Packet;
@@ -22,8 +23,9 @@ public class PacketManager extends Thread {
 	// Genera eventos cuando llegan paquetes
 	public PacketManager(Receiver rc){
 		
-		System.out.println("PacketManager. Se inicia el PacketManager.");
-		
+		Logger logger = Logger.getLogger("ClientLog");  
+		logger.info("Se inicia el PacketManager.");		
+
 		receiver=rc;
 		
 		continuar=true;
@@ -35,6 +37,8 @@ public class PacketManager extends Thread {
 	
 	public void run(){
 
+		Logger logger = Logger.getLogger("ClientLog");  
+		
 		try {
 			
 			while(continuar){
@@ -43,16 +47,15 @@ public class PacketManager extends Thread {
 						
 				while(p!=null){
 					
-					System.out.println("PacketManager. Paquete recibido.");
+					logger.info("Paquete recibido.");
 
 					//TODO: deserializar el paquete invocando al método que corresponda al tipo de paquete
-					
 					// Si el paquete es de tipo CHAT agregamos el Mensaje al GameModel
 					if(p.getType()==Packet.Tipo.CHAT){
 						
 						ChatPacket cp= new ChatPacket();
 
-						System.out.println("PacketManager. contenido del paquete: "+ p.getContenido());
+						logger.info("Contenido del paquete: "+ p.getContenido());
 						
 						cp.deserializar(p.getContenido());
 
