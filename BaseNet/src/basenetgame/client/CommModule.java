@@ -78,7 +78,8 @@ public class CommModule {
 				sender.start();
 				
 				pktmgr= new PacketManager(receiver);
-				pktmgr.addListener(gc);		
+				pktmgr.addPacketListener(gc);	
+				pktmgr.addLostConnectionListener(gc);
 				pktmgr.start();
 				
 				estado=Estado.CONECTADO;
@@ -102,21 +103,17 @@ public class CommModule {
 	
 	public void cerrarConexion(){
 		
-		sender=null;
-		receiver=null;
-		pktmgr=null;
-		
 		if(sender!=null){
 			sender.finish();
 		}
 		
 		if(receiver!=null){
 			receiver.finish();
-		}
+		}		
 		
 		if(pktmgr!=null){
 			pktmgr.finish();
-		}
+		}		
 		
 		if (socket!=null){
 			
@@ -127,9 +124,13 @@ public class CommModule {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			
+			socket=null;
 		}
 		
-		
+		sender=null;
+		receiver=null;
+		pktmgr=null;		
 	}
 	
 	public Estado getEstado(){

@@ -47,6 +47,11 @@ public class GameHandler extends Thread{
 				
 				ClientHandler cHandler= listaClientes.get(x);
 				
+				try {
+					Thread.sleep(0);
+				} catch (InterruptedException e) {}
+				
+				//TODO: CHEKEAR QUE EL CLIENTHANDLER ESTE LISTO HANTES DE EJECUTAR LA SIGUIENTE LINEA
 				Packet packet=cHandler.getPacket();
 				while(packet!=null){
 					

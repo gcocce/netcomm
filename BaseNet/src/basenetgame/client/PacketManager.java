@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import basenetgame.common.ChatPacket;
 import basenetgame.common.Packet;
+import basenetgame.common.Protocol;
 import basenetgame.common.Receiver;
 
 public class PacketManager extends Thread {
@@ -14,11 +15,15 @@ public class PacketManager extends Thread {
 	
 	boolean continuar;
 	
-	private List<PacketListener> listeners = new ArrayList<PacketListener>();
-
-    public void addListener(PacketListener toAdd) {
-        listeners.add(toAdd);
+	private List<PacketListener> packetlisteners = new ArrayList<PacketListener>();
+    public void addPacketListener(PacketListener toAdd) {
+    	packetlisteners.add(toAdd);
     }
+    
+	private List<LostConnectionListener> lostconnlisteners = new ArrayList<LostConnectionListener>();
+    public void addLostConnectionListener(LostConnectionListener toAdd) {
+    	lostconnlisteners.add(toAdd);
+    }    
     
 	// Genera eventos cuando llegan paquetes
 	public PacketManager(Receiver rc){
@@ -66,13 +71,22 @@ public class PacketManager extends Thread {
 					if(p.getType()==Packet.Tipo.GAME_MOVE){
 
 					}
-
 					
 					// Notify everybody that may be interested.
-			        for (PacketListener hl : listeners)
+			        for (PacketListener hl : packetlisteners)
 			            hl.OnPacketReceived(p);
 			        
 			        p=receiver.receivePacket();
+				}
+				
+				if(continuar && receiver.getStatus()==Protocol.Status.BROKEN){
+					
+					logger.info("PacketManager. Conexión cerrada en el otro extremo.");
+					continuar = false;
+					
+					// Notify everybody that may be interested.
+			        for (LostConnectionListener hl : lostconnlisteners)
+			            hl.OnLostConnection();					
 				}
 				
 				// Sleep de 0 milisegundos para dejar que el sistema operativo

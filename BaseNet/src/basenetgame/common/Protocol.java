@@ -11,7 +11,10 @@ import java.util.logging.Logger;
 
 public class Protocol {
 	
+	public enum Status{DEFAULT, CONNECTION_ERROR, CONNECTED, BROKEN};
+	
 	String error;
+	Status status;
 	
 	// Agregar variables para controlar la comunicación
 	// Ejemplos: 
@@ -20,10 +23,15 @@ public class Protocol {
 	
 	public Protocol(){
 		error="";
+		status = Protocol.Status.DEFAULT;
 	}
 	
 	public String getError(){
 		return error;
+	}
+	
+	public Status getStatus(){
+		return status;
 	}
 	
 	// Devuelve true si se cumple el protocolo y la conexión es aceptada por el servidor
@@ -36,12 +44,14 @@ public class Protocol {
 		
 		if (s==null){
 			error="El socket es nulo";
+			status=Protocol.Status.CONNECTION_ERROR;
 			return false;
 		}
 		
 		if(!EnviarPaquete(s, rcp)){
 			
 			error="Se produjo un error al enviar el paquete de Solicitud de la Conexión.";
+			status=Protocol.Status.CONNECTION_ERROR;
 			return false;
 		} 
 
@@ -53,6 +63,7 @@ public class Protocol {
 		if (p.tipo==Packet.Tipo.ACEPTA_CONEXION){
 			
 			//System.out.println("Se recibe un paquete de tipo ACEPTA CONEXION");
+			status=Protocol.Status.CONNECTED;
 			return true;
 		}
 			
@@ -62,11 +73,12 @@ public class Protocol {
 			RejectConnectionPacket rjcp=(RejectConnectionPacket)p;
 			
 			error=rjcp.getMotivo();
-			
+			status=Protocol.Status.CONNECTION_ERROR;
 			return false;
 		}
 
 		error="El Servidor no responde de acuerdo al protocolo";
+		status=Protocol.Status.CONNECTION_ERROR;
 		
 		return false;
 	}
@@ -85,7 +97,8 @@ public class Protocol {
 			RejectConnectionPacket rp= new RejectConnectionPacket("No cumple con el protocolo!");
 			EnviarPaquete(s, rp);
 			
-			error="El paquete recibido no es es del tipo SOLICITA CONEXION";			
+			error="El paquete recibido no es es del tipo SOLICITA CONEXION";
+			status=Protocol.Status.CONNECTION_ERROR;
 			
 			return false;
 		}else{
@@ -95,9 +108,11 @@ public class Protocol {
 			AcceptConnectionPacket acp=new AcceptConnectionPacket();
 			
 			if (EnviarPaquete(s, acp)){
+				status=Protocol.Status.CONNECTED;
 				return true;
 			}else{
 				error="Se produjo un error inesperado al Aceptar la Conexión";
+				status=Protocol.Status.CONNECTION_ERROR;
 				return false;
 			}	
 		}
@@ -112,6 +127,7 @@ public class Protocol {
 		// Comprobamos si el cliente envía el paquete esperado
 		if (p.tipo!=Packet.Tipo.SOLICITA_CONEXION){
 			error="El paquete no es es del tipo SOLICITA CONEXION";
+			status=Protocol.Status.CONNECTION_ERROR;
 		}
 
 		// Se envía un paquete de tipo RejectConnection
@@ -128,9 +144,11 @@ public class Protocol {
 			outs.writeUTF(p.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
+			status=Protocol.Status.BROKEN;
 			return false;
 		} catch (IllegalBlockingModeException e){
 			e.printStackTrace();
+			status=Protocol.Status.BROKEN;
 			return false;
 		}
 		
@@ -151,10 +169,12 @@ public class Protocol {
 
 			return p;
 		} catch (IOException e) {
-			e.printStackTrace();
+			status=Protocol.Status.BROKEN;
+			//e.printStackTrace();
 			return null;
 		}catch (IllegalBlockingModeException e){
-			e.printStackTrace();
+			//e.printStackTrace();
+			status=Protocol.Status.BROKEN;
 			return null;
 		}
 		

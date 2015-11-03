@@ -1,5 +1,7 @@
 package basenetgame.client;
 
+import java.io.IOException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -10,12 +12,14 @@ import basenetgame.common.Packet;
 // GC: Porqué el programa principal termina luego de generar los objetos,
 // y estos dejarían de existir si al menos uno de ellos no continúa ejecutandose
 // con las referencias de los otros para que el Recolector de Basura de Java no los elimine.
-public class GameController extends Thread implements PacketListener, ChatMessageCreatedListener{
+public class GameController extends Thread implements PacketListener, LostConnectionListener, ChatMessageCreatedListener{
 
 	private GameModel gameModel;
 	private GameView gameView;
 	private CommModule comModule;
 	private boolean continuar;
+	
+	Scanner teclado=null;
 	
 	public GameController(GameModel gm, GameView gv){
 		
@@ -28,6 +32,8 @@ public class GameController extends Thread implements PacketListener, ChatMessag
 		
 		// Creamos el Módulo de Comunicaciones
 		comModule = new CommModule(this);
+		
+		teclado=new Scanner(System.in);
 		
 		continuar=true;
 	}
@@ -56,33 +62,41 @@ public class GameController extends Thread implements PacketListener, ChatMessag
 		
 		while(continuar){
 			try {
-
-				
-				Scanner teclado=new Scanner(System.in);
-				
+							
 				// Capturar lo que se ingresa por teclado y finalizar al recibir la palabra "terminar"
 				while (continuar){
 
 					String chatStr = null;
 					
 					chatStr=teclado.nextLine();
-
-					Message msg=new Message(gameModel.getUserName(), chatStr);
 					
-					comModule.enviarMensajeChat(msg);
 					
-					gameView.mostrarMensaje(msg);
+					if (continuar && chatStr!=null){
+						if(chatStr.compareToIgnoreCase("salir")==0){
+							
+							System.out.println("El Usuario finaliza el programa.");
+							
+							continuar=false;
+						}else{
+							Message msg=new Message(gameModel.getUserName(), chatStr);
+							comModule.enviarMensajeChat(msg);						
+						}						
+					}
 				}				
 				
 				// Sleep de 0 milisegundos para dejar que el sistema operativo
 				// de paso a otro proceso o thread en este punto
 				Thread.sleep(0);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				
+			} catch (InterruptedException ie) {
+				ie.printStackTrace();
+				continuar=false;
+			} catch (NoSuchElementException nsee){
 				continuar=false;
 			}
 		}
+		
+		// Cerrar el view
+		gameView.finish();
 		
 		// Cerrar el módulo de comunicaciones y todo lo que haga falta
 		comModule.cerrarConexion();
@@ -91,6 +105,14 @@ public class GameController extends Thread implements PacketListener, ChatMessag
 	// A este metodo hay que llamar cuando se quiera cerrar el programa cliente
 	public void finish(){
 		continuar=false;
+			
+		// Cerrar el view
+		gameView.finish();
+		
+		// Cerrar el módulo de comunicaciones y todo lo que haga falta
+		comModule.cerrarConexion();
+		
+		System.exit(0);
 	}
 
 	// Cuando el Módulo de comunicación recibe un paquete por la red genera este evento.
@@ -131,4 +153,12 @@ public class GameController extends Thread implements PacketListener, ChatMessag
 	public void OnChatMessageCreated(Message m) {
 		comModule.enviarMensajeChat(m);
 	}
+
+	@Override
+	public void OnLostConnection() {
+		System.out.println("GameController. OnLostConnection");
+		this.finish();		
+	}
 }
+
+

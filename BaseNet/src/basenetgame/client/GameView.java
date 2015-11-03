@@ -11,6 +11,8 @@ public class GameView extends Thread implements ChatMessageReceivedListener {
 	
 	Scanner scanner;
 	
+	boolean continuar;
+	
 	// Lista de observadores del evento OnChatMessageCreated
 	private List<ChatMessageCreatedListener> listeners = new ArrayList<ChatMessageCreatedListener>();	
 	
@@ -32,27 +34,31 @@ public class GameView extends Thread implements ChatMessageReceivedListener {
 		gameModel.addChatMessageReceivedListener(this);
 	}
 	
+	public void finish(){
+		continuar=false;
+	}
+	
 	public void run(){
 		
-		String cadena=null;
-		boolean seguir=true;
+		continuar=true;
 		
-		do{
-			cadena = scanner.nextLine();
+		while(continuar){
+			try {
 			
-			if(cadena.compareToIgnoreCase("salir")==0){
-				seguir=false;
-			}else{
-				buildChatMessage(cadena);
-			}
-			
-		}while(seguir);
+				
+				
+				// Sleep de 0 milisegundos para dejar que el sistema operativo
+				// de paso a otro proceso o thread en este punto				
+				Thread.sleep(0);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}		
+		}
 		
 	}
 
 	@Override
 	public void OnChatMessageReceived(Message m) {
-		
 		mostrarMensaje(m);
 	}
 	
@@ -64,7 +70,6 @@ public class GameView extends Thread implements ChatMessageReceivedListener {
         for (ChatMessageCreatedListener hl : listeners)
             hl.OnChatMessageCreated(msg);
         
-        mostrarMensaje(msg);
 	}
 	
 	public void mostrarMensaje(Message m){
