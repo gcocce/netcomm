@@ -23,6 +23,10 @@ public class Sender extends Thread{
 		paquetes= new ArrayList<Packet>();
 	}
 	
+	public Protocol.Status getStatus(){
+		return protocol.getStatus();
+	}	
+	
 	public synchronized void sendPacket(Packet packet){
 		//Agregar paquete a la collection
 		

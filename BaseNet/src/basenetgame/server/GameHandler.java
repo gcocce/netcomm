@@ -42,6 +42,7 @@ public class GameHandler extends Thread{
 		
 		while(continuar){
 			
+			
 			// Comprobar si hay paquetes ¿de qué manera?
 			for(int x=0; x < listaClientes.size(); x++) {
 				
@@ -51,18 +52,31 @@ public class GameHandler extends Thread{
 					Thread.sleep(0);
 				} catch (InterruptedException e) {}
 				
-				//TODO: CHEKEAR QUE EL CLIENTHANDLER ESTE LISTO HANTES DE EJECUTAR LA SIGUIENTE LINEA
-				Packet packet=cHandler.getPacket();
-				while(packet!=null){
+				if (cHandler.getStatus()==ClientHandler.Status.READY){
 					
-					Logger logger = Logger.getLogger("ServerLog");  
-					logger.info("GameHandler. Paquete recibido.");
-					
-					procesarPacket(packet, x);
-					
-					packet=cHandler.getPacket();
+					Packet packet=cHandler.getPacket();
+					while(packet!=null){
+						
+						Logger logger = Logger.getLogger("ServerLog");  
+						logger.info("GameHandler. Paquete recibido.");
+						
+						procesarPacket(packet, x);
+						
+						packet=cHandler.getPacket();
+					}
 				}
-			}			
+
+				if (cHandler.getStatus()==ClientHandler.Status.BROKEN){
+
+					listaClientes.remove(x);
+					
+					System.out.println("Se perdió la conexion de un cliente");
+					
+					cHandler.closeConnection();
+					
+					//TODO: Informar a los otros clientes y esperar por la conexion de un nuevo cliente					
+				}
+			}
 			
 			
 			try {
@@ -84,10 +98,14 @@ public class GameHandler extends Thread{
 			
 			if (x != clientPos){
 				
-				Logger logger = Logger.getLogger("ServerLog");  
-				logger.info("GameHandler. Se reenvía un paquete al cliente " + x);				
-				
-				cHandler.sendPacket(packet);	
+				// Chequeamos el estado del cliente
+				if (cHandler.getStatus()==ClientHandler.Status.READY){
+					
+					Logger logger = Logger.getLogger("ServerLog");  
+					logger.info("GameHandler. Se reenvía un paquete al cliente " + x);				
+					
+					cHandler.sendPacket(packet);	
+				}
 			}
 		}		
 	}
