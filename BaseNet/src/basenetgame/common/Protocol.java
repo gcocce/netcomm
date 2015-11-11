@@ -70,8 +70,12 @@ public class Protocol {
 		// Comprobamos si el cliente envía el paquete esperado
 		if (p.tipo==Packet.Tipo.RECHAZA_CONEXION){
 			
-			RejectConnectionPacket rjcp=(RejectConnectionPacket)p;
-			
+			RejectConnectionPacket rjcp= new RejectConnectionPacket();
+
+			rjcp.deserializar(p.getContenido());
+
+			//p=(RejectConnectionPacket)rjcp;
+
 			error=rjcp.getMotivo();
 			status=Protocol.Status.CONNECTION_ERROR;
 			return false;
@@ -122,17 +126,28 @@ public class Protocol {
 		
 		// Se espera recibir un paquete RequestConnection
 		Packet p=RecibirPaquete(s);
-		System.out.println(p.toString());
+		
+		//System.out.println(p.toString());
 
 		// Comprobamos si el cliente envía el paquete esperado
 		if (p.tipo!=Packet.Tipo.SOLICITA_CONEXION){
+
 			error="El paquete no es es del tipo SOLICITA CONEXION";
 			status=Protocol.Status.CONNECTION_ERROR;
+			
+			// Enviamos el paquete de RECHAZO de la conexión			
+			RejectConnectionPacket rp= new RejectConnectionPacket("No cumple con el protocolo!");
+			EnviarPaquete(s, rp);
+			
+		}else{
+			
+			error=motivo;
+			
+			// Se envía un paquete de tipo RejectConnection
+			RejectConnectionPacket rp= new RejectConnectionPacket(motivo);
+			EnviarPaquete(s, rp);
 		}
 
-		// Se envía un paquete de tipo RejectConnection
-		RejectConnectionPacket rp= new RejectConnectionPacket(motivo);
-		EnviarPaquete(s, rp);
 	}	
 
 	public boolean EnviarPaquete(Socket s, Packet p){

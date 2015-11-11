@@ -25,15 +25,20 @@ public class ConnectionHandler extends Thread {
 		
 		Protocol prot=new Protocol();
 		
-		if (prot.AceptarConexion(socket)){
+		// Comprobamos si hay espacio en la sala
+		if(gamehandler.isComplete()){
+			
+			prot.RechazarConexion(socket, "Juego Completo, no hay espacio para otro jugador!");
+			
+		}else if (prot.AceptarConexion(socket)){
 			
 			logger.info("ConnectionHandler. Conexión aceptada.");
 			
 			// Crear un Cliente y agregar el objeto en alguna Sala
 			ClientHandler cHandler= new ClientHandler(socket);
 
-			// Agregamos el cliente a la sala
 			gamehandler.addClient(cHandler);
+				
 		}else{
 			logger.info("ConnectionHandler. Conexión no aceptada: " +  prot.getError());
 		}

@@ -8,10 +8,17 @@ import basenetgame.common.Packet;
 public class GameHandler extends Thread{
 	
 	private ArrayList<ClientHandler> listaClientes;
+	
+	private int GAME_PLAYERS = 2;
+	
 	private boolean continuar=true;
 	
 	public GameHandler(){
 		listaClientes=new ArrayList<ClientHandler>();
+	}
+	
+	public void setGamePlayers(int size){
+		this.GAME_PLAYERS=size;
 	}
 	
 	public boolean addClient(ClientHandler cH){
@@ -20,7 +27,15 @@ public class GameHandler extends Thread{
 		
 		return true;
 	}
-
+	
+	public boolean isComplete(){
+		
+		if(listaClientes.size()< GAME_PLAYERS){
+			return false;
+		}else{
+			return true;
+		}
+	}
 	
 	public void finish(){
 
