@@ -1,1 +1,4 @@
+/bin/basenetgame/
+/bin/*.log
+.settings/
 /bin/
