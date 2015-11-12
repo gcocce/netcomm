@@ -59,11 +59,11 @@ public class ClientHandler {
 		logger.info("Se inicia el cierre del ClientHandler.");
 		
 		try {
-			socket.close();
-			
 			sender.finish();
 			
 			receiver.finish();
+			
+			socket.close();			
 			
 			try {
 				sender.join();

@@ -7,6 +7,7 @@ public class Sender extends Thread{
 	
 	Socket socket;
 	Protocol protocol;
+	Protocol.Status status;
 	
 	// Agregar Collection para guardar temporalmente los paquetes a enviar
 	ArrayList<Packet> paquetes;
@@ -17,15 +18,16 @@ public class Sender extends Thread{
 	public Sender (Socket s){
 		continuar=true;
 		
-		this.socket=s;
+		this.socket = s;
 		protocol = new Protocol();
+		status=protocol.getStatus();
 		
 		paquetes= new ArrayList<Packet>();
 	}
 	
 	public Protocol.Status getStatus(){
 		return protocol.getStatus();
-	}	
+	}
 	
 	public synchronized void sendPacket(Packet packet){
 		//Agregar paquete a la collection
@@ -53,6 +55,8 @@ public class Sender extends Thread{
 
 		try {
 
+			protocol.setStatus(Protocol.Status.CONNECTED);
+			
 			while(continuar){
 				
 				//Si hay paquetes en la colection obtenerlo usando el método getPacket() y enviarlo

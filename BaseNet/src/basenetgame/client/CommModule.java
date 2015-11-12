@@ -117,7 +117,7 @@ public class CommModule {
 		
 		if (socket!=null){
 			
-			System.out.println("CommModule. Se cierra el Socket.");
+			//System.out.println("CommModule. Se cierra el Socket.");
 			
 			try {
 				socket.close();
@@ -148,7 +148,7 @@ public class CommModule {
 		enviarPacket(cp);
 	}
 	
-	public void enviarPacket(Packet p){
+	public void enviarPacket(Packet p){	
 		sender.sendPacket(p);
 	}
 }

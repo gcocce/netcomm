@@ -78,7 +78,11 @@ public class GameController extends Thread implements PacketListener, LostConnec
 							
 							continuar=false;
 						}else{
+							
 							Message msg=new Message(gameModel.getUserName(), chatStr);
+							
+							logger.info("Se envía un mensaje de chat: "+ msg.getMessage());
+							
 							comModule.enviarMensajeChat(msg);						
 						}						
 					}
@@ -156,7 +160,6 @@ public class GameController extends Thread implements PacketListener, LostConnec
 
 	@Override
 	public void OnLostConnection() {
-		System.out.println("GameController. OnLostConnection");
 		this.finish();		
 	}
 }

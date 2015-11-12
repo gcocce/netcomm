@@ -7,6 +7,7 @@ public class Receiver extends Thread{
 
 	Socket socket;
 	Protocol protocol;
+	Protocol.Status status;
 	
 	// Agregar collection para guardar temporalmente los paquetes recibidos
 	ArrayList<Packet> paquetes;
@@ -19,7 +20,8 @@ public class Receiver extends Thread{
 		
 		this.socket=s;
 		protocol = new Protocol();
-		
+		status=protocol.getStatus();
+				
 		paquetes= new ArrayList<Packet>();
 	}
 	
@@ -52,6 +54,8 @@ public class Receiver extends Thread{
 		
 		try {
 
+			protocol.setStatus(Protocol.Status.CONNECTED);
+			
 			Packet packet = protocol.RecibirPaquete(socket);
 			while (continuar && packet!=null){
 				

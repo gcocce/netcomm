@@ -60,7 +60,7 @@ public class PacketManager extends Thread {
 						
 						ChatPacket cp= new ChatPacket();
 
-						logger.info("Contenido del paquete: "+ p.getContenido());
+						//logger.info("Contenido del paquete de chat: "+ p.getContenido());
 						
 						cp.deserializar(p.getContenido());
 

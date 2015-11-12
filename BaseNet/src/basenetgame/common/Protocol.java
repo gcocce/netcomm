@@ -34,6 +34,10 @@ public class Protocol {
 		return status;
 	}
 	
+	public void setStatus(Protocol.Status status){
+		this.status=status;
+	}
+	
 	// Devuelve true si se cumple el protocolo y la conexión es aceptada por el servidor
 	// Devuelve false si no se cumple le protocolo o el servidor no acepta la conexión,
 	// En todos los casos casos se guarda el mensaje de error en el atributo error

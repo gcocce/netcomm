@@ -55,6 +55,8 @@ public class GameHandler extends Thread{
 	
 	public void run(){
 		
+		Logger logger = Logger.getLogger("ServerLog");
+		
 		while(continuar){
 			
 			
@@ -72,8 +74,7 @@ public class GameHandler extends Thread{
 					Packet packet=cHandler.getPacket();
 					while(packet!=null){
 						
-						Logger logger = Logger.getLogger("ServerLog");  
-						logger.info("GameHandler. Paquete recibido.");
+  						logger.info("Paquete recibido. " + packet.getType());
 						
 						procesarPacket(packet, x);
 						
@@ -106,6 +107,8 @@ public class GameHandler extends Thread{
 	
 	public void procesarPacket(Packet packet, int clientPos){
 
+		Logger logger = Logger.getLogger("ServerLog"); 
+		
 		// En principio reenviamos todos lo paquetes a los clientes que forman parte del juego
 		for(int x=0; x < listaClientes.size(); x++) {
 			
@@ -116,7 +119,6 @@ public class GameHandler extends Thread{
 				// Chequeamos el estado del cliente
 				if (cHandler.getStatus()==ClientHandler.Status.READY){
 					
-					Logger logger = Logger.getLogger("ServerLog");  
 					logger.info("GameHandler. Se reenvía un paquete al cliente " + x);				
 					
 					cHandler.sendPacket(packet);	
