@@ -9,6 +9,7 @@ import basenetgame.common.LostClientPacket;
 import basenetgame.common.Packet;
 import basenetgame.common.Protocol;
 import basenetgame.common.Receiver;
+import basenetgame.common.StartGamePacket;
 
 public class PacketManager extends Thread {
 
@@ -74,6 +75,12 @@ public class PacketManager extends Thread {
 						lcp.deserializar(p.getContenido());
 
 						p=(LostClientPacket)lcp;
+					}
+					
+					if(p.getType()==Packet.Tipo.START_GAME){
+						StartGamePacket scp= new StartGamePacket();
+
+						p=(StartGamePacket)scp;
 					}					
 
 					// TODO: Completar con otros tipos de paquetes		

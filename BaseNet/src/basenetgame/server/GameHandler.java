@@ -5,16 +5,23 @@ import java.util.logging.Logger;
 
 import basenetgame.common.LostClientPacket;
 import basenetgame.common.Packet;
+import basenetgame.common.StartGamePacket;
 
 public class GameHandler extends Thread{
+	
+	public enum Status{DEFAULT, WATTING, STARTED, BROKEN};
+	
+	Status status;
 	
 	private ArrayList<ClientHandler> listaClientes;
 	
 	private int GAME_PLAYERS = 2;
 	
 	private boolean continuar=true;
+	private boolean complete=false;
 	
 	public GameHandler(){
+		status=Status.WATTING;
 		listaClientes=new ArrayList<ClientHandler>();
 	}
 	
@@ -25,6 +32,10 @@ public class GameHandler extends Thread{
 	public boolean addClient(ClientHandler cH){
 		
 		listaClientes.add(cH);
+		
+		if (isComplete()){
+			complete=true;			
+		}
 		
 		return true;
 	}
@@ -60,16 +71,36 @@ public class GameHandler extends Thread{
 		
 		while(continuar){
 			
+			if (complete && status==Status.WATTING){
+				boolean ready=true;
+				
+				for(int x=0; x < listaClientes.size(); x++) {
+					
+					ClientHandler cHandler= listaClientes.get(x);
+					
+					if (cHandler.getStatus()!=ClientHandler.Status.READY){
+						ready=false;
+					}
+				}
+				
+				if (ready){
+					
+					StartGamePacket sgp=new StartGamePacket();
+					
+					boadcastPacket(sgp);
+					
+					logger.info("Paquete recibido. ");
+					
+					status=Status.STARTED;
+				}
+				
+			}
 			
 			// Comprobar si hay paquetes ¿de qué manera?
 			for(int x=0; x < listaClientes.size(); x++) {
 				
 				ClientHandler cHandler= listaClientes.get(x);
-				
-				try {
-					Thread.sleep(0);
-				} catch (InterruptedException e) {}
-				
+							
 				if (cHandler.getStatus()==ClientHandler.Status.READY){
 					
 					Packet packet=cHandler.getPacket();
@@ -125,12 +156,30 @@ public class GameHandler extends Thread{
 				// Chequeamos el estado del cliente
 				if (cHandler.getStatus()==ClientHandler.Status.READY){
 					
-					logger.info("GameHandler. Se reenvía un paquete al cliente " + x);				
+					logger.info("Se reenvía un paquete al cliente " + x);				
 					
 					cHandler.sendPacket(packet);	
 				}
 			}
 		}		
 	}
+	
+	public void boadcastPacket(Packet packet){
 
+		Logger logger = Logger.getLogger("ServerLog"); 
+		
+		// En principio reenviamos todos lo paquetes a los clientes que forman parte del juego
+		for(int x=0; x < listaClientes.size(); x++) {
+			
+			ClientHandler cHandler= listaClientes.get(x);
+				
+			// Chequeamos el estado del cliente
+			if (cHandler.getStatus()==ClientHandler.Status.READY){
+				
+				logger.info("Se envía un paquete al cliente " + x);				
+				
+				cHandler.sendPacket(packet);	
+			}
+		}		
+	}	
 }
