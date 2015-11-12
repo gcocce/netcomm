@@ -19,6 +19,8 @@ public class ClientHandler {
 	private Sender sender;
 	private Receiver receiver;
 	
+	private String Nick;
+	
 	public ClientHandler(Socket s){
 		this.socket=s;
 		

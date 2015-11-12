@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import basenetgame.common.ChatPacket;
+import basenetgame.common.LostClientPacket;
 import basenetgame.common.Packet;
 import basenetgame.common.Protocol;
 import basenetgame.common.Receiver;
@@ -66,8 +67,17 @@ public class PacketManager extends Thread {
 
 						p=(ChatPacket)cp;
 					}
+					
+					if(p.getType()==Packet.Tipo.LOST_CLIENT){
+						LostClientPacket lcp= new LostClientPacket();
 
-					// TODO: Completar con otros tipos de paquetes					
+						lcp.deserializar(p.getContenido());
+
+						p=(LostClientPacket)lcp;
+					}					
+
+					// TODO: Completar con otros tipos de paquetes		
+					
 					if(p.getType()==Packet.Tipo.GAME_MOVE){
 
 					}

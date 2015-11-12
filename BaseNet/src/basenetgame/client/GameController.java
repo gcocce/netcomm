@@ -6,6 +6,7 @@ import java.util.Scanner;
 import java.util.logging.Logger;
 
 import basenetgame.common.ChatPacket;
+import basenetgame.common.LostClientPacket;
 import basenetgame.common.Packet;
 
 // GC: ¿Por qué tiene que ser un Thread el GameController? 
@@ -49,7 +50,6 @@ public class GameController extends Thread implements PacketListener, LostConnec
 		}		
 	}
 	
-
 	public void run(){
 		
 		Logger logger = Logger.getLogger("ClientLog");  
@@ -139,14 +139,21 @@ public class GameController extends Thread implements PacketListener, LostConnec
 			
 			gameModel.addMessage(m);
 		}
-		
+	
+		if(p.getType()==Packet.Tipo.LOST_CLIENT){
+			
+			LostClientPacket lcp=(LostClientPacket)p;
+			
+			String userLost= lcp.getUser();
+			
+			System.out.println("Se desconectó " + userLost);
+		}
 		
 		if(p.getType()==Packet.Tipo.GAME_MOVE){
 
 		}
 		
 		// TODO: Completar con otros tipos de paquetes
-		
 		
 	}
 

@@ -2,7 +2,7 @@ package basenetgame.common;
 
 public class Packet {
 
-	public enum Tipo{DEFAULT, SOLICITA_CONEXION, ACEPTA_CONEXION, RECHAZA_CONEXION, CHAT, GAME_MOVE};
+	public enum Tipo{DEFAULT, SOLICITA_CONEXION, ACEPTA_CONEXION, RECHAZA_CONEXION, CHAT, LOST_CLIENT, GAME_MOVE};
 	
 	public int SIZE_HEADER=10;
 

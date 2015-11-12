@@ -3,6 +3,7 @@ package basenetgame.server;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import basenetgame.common.LostClientPacket;
 import basenetgame.common.Packet;
 
 public class GameHandler extends Thread{
@@ -84,16 +85,21 @@ public class GameHandler extends Thread{
 
 				if (cHandler.getStatus()==ClientHandler.Status.BROKEN){
 
+					
+					
+					//TODO: Informar a los otros clientes y esperar por la conexion de un nuevo cliente
+					LostClientPacket lcp=new LostClientPacket();
+					lcp.setUser("User "+x);
+					
+					procesarPacket(lcp, x);
+					
 					listaClientes.remove(x);
 					
 					System.out.println("Se perdió la conexion de un cliente");
 					
 					cHandler.closeConnection();
-					
-					//TODO: Informar a los otros clientes y esperar por la conexion de un nuevo cliente					
 				}
 			}
-			
 			
 			try {
 				// Sleep de 0 milisegundos para dejar que el sistema operativo
