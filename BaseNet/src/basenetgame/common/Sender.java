@@ -26,6 +26,10 @@ public class Sender extends Thread{
 	}
 	
 	public Protocol.Status getStatus(){
+		// DEBUG
+		if(protocol==null){
+			System.out.println("Sender protocol is null");
+		}
 		return protocol.getStatus();
 	}
 	

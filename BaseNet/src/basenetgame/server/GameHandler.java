@@ -13,11 +13,16 @@ public class GameHandler extends Thread{
 	
 	Status status;
 	
+	// Lista de jugadores
 	private ArrayList<ClientHandler> listaClientes;
 	
+	// Cantidad de jugadores del juego o la sala
 	private int GAME_PLAYERS = 2;
 	
+	// Variable usada para detener el juego
 	private boolean continuar=true;
+	
+	// Variable usada para determinar si el juego o la sala tiene el numero de jugadores esperado
 	private boolean complete=false;
 	
 	public GameHandler(){
@@ -31,24 +36,24 @@ public class GameHandler extends Thread{
 	
 	public boolean addClient(ClientHandler cH){
 		
-		listaClientes.add(cH);
+		if(listaClientes.size()< GAME_PLAYERS){
+			complete=false;
+			listaClientes.add(cH);
+		}
 		
-		if (isComplete()){
-			complete=true;			
+		if(listaClientes.size()== GAME_PLAYERS){
+			complete=true;
 		}
 		
 		return true;
 	}
 	
 	public boolean isComplete(){
-		
-		if(listaClientes.size()< GAME_PLAYERS){
-			return false;
-		}else{
-			return true;
-		}
+		return complete;
 	}
 	
+	//***********************************************************************
+	// Metodo llamado al finalizar el servidor	
 	public void finish(){
 
 		continuar=false;
@@ -60,7 +65,6 @@ public class GameHandler extends Thread{
 		for(int x=0; x < listaClientes.size(); x++) {
 			
 			ClientHandler cHandler= listaClientes.get(x);
-			
 			cHandler.closeConnection();
 		}		
 	}
@@ -71,7 +75,10 @@ public class GameHandler extends Thread{
 		
 		while(continuar){
 			
+			//***********************************************************************
+			// Chequeamos que estén todos los jugadores para iniciar el juego
 			if (complete && status==Status.WATTING){
+				
 				boolean ready=true;
 				
 				for(int x=0; x < listaClientes.size(); x++) {
@@ -83,52 +90,73 @@ public class GameHandler extends Thread{
 					}
 				}
 				
+				// Se informa a todos los jugadores cuando la sala esta completa
 				if (ready){
 					
 					StartGamePacket sgp=new StartGamePacket();
 					
 					boadcastPacket(sgp);
 					
-					logger.info("Paquete recibido. ");
-					
 					status=Status.STARTED;
+					
+					logger.info("Se informa el inicio del juego. ");
+					System.out.println("Juego Iniciado.");
 				}
-				
 			}
 			
-			// Comprobar si hay paquetes ¿de qué manera?
+			//***********************************************************************
+			// Comprobar si hay paquetes recibidos para procesar
 			for(int x=0; x < listaClientes.size(); x++) {
 				
 				ClientHandler cHandler= listaClientes.get(x);
-							
-				if (cHandler.getStatus()==ClientHandler.Status.READY){
+
+				try{
 					
-					Packet packet=cHandler.getPacket();
-					while(packet!=null){
-						
-  						logger.info("Paquete recibido. " + packet.getType());
-						
-						procesarPacket(packet, x);
-						
-						packet=cHandler.getPacket();
+					// Debug
+					if (cHandler==null){
+						System.out.println("Client Null!");
 					}
+					
+					// Aveces tira error NullPointerException en la siguiente linea
+					// porque el cliente es null
+					if (cHandler.getStatus()==ClientHandler.Status.READY){
+
+						Packet packet=cHandler.getPacket();
+						while(packet!=null){
+
+							logger.info("Paquete recibido. " + packet.getType());
+
+							procesarPacket(packet, x);
+
+							packet=cHandler.getPacket();
+						}
+					}
+
+					if (cHandler.getStatus()==ClientHandler.Status.BROKEN){
+
+						LostClientPacket lcp=new LostClientPacket();
+						lcp.setUser("Jugador " + x);
+
+						procesarPacket(lcp, x);
+
+						listaClientes.remove(x);
+
+						complete=false;
+						status=Status.WATTING;
+
+						//TODO: Reinicializar el juego si fuera necesario
+
+						System.out.println("Se perdió la conexion del jugador " + x);
+						logger.info("Se perdió la conexion del jugador " + x);
+
+						cHandler.closeConnection();
+					}
+
 				}
-
-				if (cHandler.getStatus()==ClientHandler.Status.BROKEN){
-
-					
-					
-					//TODO: Informar a los otros clientes y esperar por la conexion de un nuevo cliente
-					LostClientPacket lcp=new LostClientPacket();
-					lcp.setUser("User "+x);
-					
-					procesarPacket(lcp, x);
-					
-					listaClientes.remove(x);
-					
-					System.out.println("Se perdió la conexion de un cliente");
-					
-					cHandler.closeConnection();
+				
+				catch (NullPointerException e){
+					e.printStackTrace();
+					logger.severe("NullPointerException" + e.getStackTrace().toString());
 				}
 			}
 			
@@ -140,11 +168,19 @@ public class GameHandler extends Thread{
 				e.printStackTrace();
 			}			
 		}
+		
+		logger.info("Finaliza el GameHandler");
 	}
 	
+	//***********************************************************************
+	// Metodo para procesar los tistintos paquetes intercambiados por los jugadores
+	// Parametros: paquete, indice del jugador que envió el paquete en la lista de jugadores
 	public void procesarPacket(Packet packet, int clientPos){
 
 		Logger logger = Logger.getLogger("ServerLog"); 
+		
+		//TODO: Comprobar el tipo de paquete y determinar si hay que hacer cambios
+		// al modelo del juego
 		
 		// En principio reenviamos todos lo paquetes a los clientes que forman parte del juego
 		for(int x=0; x < listaClientes.size(); x++) {
@@ -161,9 +197,11 @@ public class GameHandler extends Thread{
 					cHandler.sendPacket(packet);	
 				}
 			}
-		}		
+		}
 	}
 	
+	//***********************************************************************
+	// Metodo para enviar un paquete a todos los jugadores
 	public void boadcastPacket(Packet packet){
 
 		Logger logger = Logger.getLogger("ServerLog"); 

@@ -5,11 +5,17 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.logging.Logger;
-
+/*
+ * Esta clase se encarga de escuchar conexiones en el server socket.
+ * 
+ * Cuando se recibe una conexión crea un ConnectionHandler al que le pasa
+ * el socket cliente y luego continua escuchando conexiones.
+ */
 public class GateKeeper extends Thread{
 
 	ServerSocket serversocket;
 	GameHandler gamehandler;
+	
 	boolean detener;
 	
 	public GateKeeper(ServerSocket sSocket, GameHandler gHandler){
@@ -39,9 +45,14 @@ public class GateKeeper extends Thread{
 				conHandler.start();
 				
 			}catch (SocketException se){
-				logger.severe("GateKeeper. Error en el ServerSocket: "+ se.getMessage());
+				if (!detener){
+					logger.severe("SocketException: " + se.getMessage());
+					detener=true;
+				}else{
+					logger.info("SocketException: " + se.getMessage());
+				}
 			} catch (IOException e) {
-				logger.severe("GateKeeper. Error al aceptar conexion: "+ e.getMessage());
+				logger.severe("IOException: "+ e.getMessage());
 				detener=true;
 			} 
 		}
