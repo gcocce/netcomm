@@ -9,7 +9,6 @@ public class Client{
 	
 	public static void main(String[] args) {
 		
-		
 		if (args.length !=3){
 			System.out.println("Se esperan otros parametros!");
 			System.out.println("");
@@ -51,6 +50,7 @@ public class Client{
 		gameModel.setUserName(args[args.length-1]);
 		
 		// Creamos el GameView pasándole el Modelo como parámetro
+		//GameView gameView= new GameView(gameModel);
 		GameView gameView= new GameView(gameModel);
 		
 		// Creamos el GameController pasándole el Modelo y la Vista como parámetros
@@ -58,5 +58,9 @@ public class Client{
 			
 		// Iniciamos el hilo del GameController
 		gamec.start();
+		
+		gameView.setGameController(gamec);
+		
+		gameView.start();
 	}
 }

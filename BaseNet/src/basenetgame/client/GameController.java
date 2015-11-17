@@ -1,6 +1,6 @@
 package basenetgame.client;
 
-import java.io.IOException;
+
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.logging.Logger;
@@ -19,11 +19,17 @@ public class GameController extends Thread implements PacketListener, LostConnec
 	private GameModel gameModel;
 	private GameView gameView;
 	private CommModule comModule;
+	
 	private boolean continuar;
+	private boolean conectado;
+	
+	private Logger logger;
 	
 	Scanner teclado=null;
 	
 	public GameController(GameModel gm, GameView gv){
+		
+		logger = Logger.getLogger("ClientLog");
 		
 		this.gameModel=gm;
 		this.gameView=gv;
@@ -35,9 +41,10 @@ public class GameController extends Thread implements PacketListener, LostConnec
 		// Creamos el Módulo de Comunicaciones
 		comModule = new CommModule(this);
 		
-		teclado=new Scanner(System.in);
+		//teclado=new Scanner(System.in);
 		
 		continuar=true;
+		conectado=false;
 	}
 	
 	// Este método tiene que ser usado por la vista para iniciar la comunicación
@@ -45,49 +52,39 @@ public class GameController extends Thread implements PacketListener, LostConnec
 	public boolean initComm(String host, int puerto){
 		
 		if (comModule.iniciarConexion( host, puerto)){
-			return true;
+			conectado=true;
+			logger.info("Conectado");
 		}else{
-			return false;
-		}		
+			conectado=false;
+			logger.severe("No se ha podido conectar.");	
+		}
+		
+		return conectado;
 	}
 	
 	public void run(){
 		
-		Logger logger = Logger.getLogger("ClientLog");  
-		logger.info("GameController. Se intenta iniciar la conexión...");		
-		
-		// Iniciamos la conexión con el servidor
-		if (!initComm("localhost",5000)){
-			continuar=false;
-		}
-		
 		while(continuar){
 			try {
 							
-				// Capturar lo que se ingresa por teclado y finalizar al recibir la palabra "terminar"
-				while (continuar){
-
-					String chatStr = null;
-					
-					chatStr=teclado.nextLine();
-					
-					
-					if (continuar && chatStr!=null){
-						if(chatStr.compareToIgnoreCase("salir")==0){
-							
-							System.out.println("El Usuario finaliza el programa.");
-							
-							continuar=false;
-						}else{
-							
-							Message msg=new Message(gameModel.getUserName(), chatStr);
-							
-							logger.info("Se envía un mensaje de chat: "+ msg.getMessage());
-							
-							comModule.enviarMensajeChat(msg);						
-						}						
-					}
-				}				
+//				// Capturar lo que se ingresa por teclado y finalizar al recibir la palabra "terminar"
+//				while (continuar){
+//
+//					String chatStr = null;
+//					
+//					chatStr=teclado.nextLine();
+//					
+//					if (continuar && chatStr!=null){
+//						if(chatStr.compareToIgnoreCase("salir")==0){
+//							System.out.println("El Usuario finaliza el programa.");
+//							continuar=false;
+//						}else{
+//							Message msg=new Message(gameModel.getUserName(), chatStr);
+//							logger.info("Se envía un mensaje de chat: "+ msg.getMessage());
+//							comModule.enviarMensajeChat(msg);						
+//						}						
+//					}
+//				}				
 				
 				// Sleep de 0 milisegundos para dejar que el sistema operativo
 				// de paso a otro proceso o thread en este punto
@@ -177,6 +174,7 @@ public class GameController extends Thread implements PacketListener, LostConnec
 	public void OnLostConnection() {
 		this.finish();		
 	}
+	
 }
 
 

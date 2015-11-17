@@ -5,7 +5,7 @@ public class Message {
 	String message;
 	String user;
 	
-	Message(String user, String message){
+	public Message(String user, String message){
 		this.message=message;
 		this.user=user;
 	}
