@@ -9,15 +9,6 @@ public class Client{
 	
 	public static void main(String[] args) {
 		
-		if (args.length !=3){
-			System.out.println("Se esperan otros parametros!");
-			System.out.println("");
-			System.out.println("Uso:");
-			System.out.println("Client NombreServidor Puerto NombreUsuario");
-			System.out.println("");
-			return;
-		}
-		
 		//***********************************************************************
 		// Establecemos un log
 		Logger logger = Logger.getLogger("ClientLog");  
@@ -42,12 +33,12 @@ public class Client{
 	    }  
 
 	    // Actualmente tenemos harcodeado el Host y el Puerto dentro del GameController
-	    logger.info("Se inicia el Cliente con Server: " + args[0] + " Puerto: " + args[1] + " Usuario: " + args[2]);
+	    logger.info("Se inicia el Cliente");
 	    
 		// Creamos el Modelo
 		GameModel gameModel= new GameModel();
 		
-		gameModel.setUserName(args[args.length-1]);
+		//gameModel.setUserName(args[args.length-1]);
 		
 		// Creamos el GameView pasándole el Modelo como parámetro
 		//GameView gameView= new GameView(gameModel);
@@ -58,8 +49,6 @@ public class Client{
 			
 		// Iniciamos el hilo del GameController
 		gamec.start();
-		
-		gameView.setGameController(gamec);
 		
 		gameView.start();
 	}

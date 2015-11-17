@@ -15,12 +15,18 @@ import java.awt.event.ActionEvent;
 
 public class DialogoConectar extends JDialog {
 	
-	private JTextField textField_host;
+	private JTextField txtLocalhost;
 	private JTextField textField_port;
 	
 	private String host;
 	private int port;
 	
+	private boolean cancelar=false;
+	
+	public boolean isCancelar() {
+		return cancelar;
+	}
+
 	public String getHost() {
 		return host;
 	}
@@ -75,7 +81,7 @@ public class DialogoConectar extends JDialog {
 				JButton okButton = new JButton("OK");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
-						host=textField_host.getText();
+						host=txtLocalhost.getText();
 						port=Integer.valueOf(textField_port.getText());
 						me.setVisible(false);
 					}
@@ -90,6 +96,7 @@ public class DialogoConectar extends JDialog {
 					public void actionPerformed(ActionEvent arg0) {
 						host="";
 						port=0;
+						cancelar=true;
 						me.setVisible(false);
 						//me.dispose();
 					}
@@ -103,16 +110,18 @@ public class DialogoConectar extends JDialog {
 		lblServerIp.setBounds(79, 33, 67, 14);
 		getContentPane().add(lblServerIp);
 		
-		textField_host = new JTextField();
-		textField_host.setBounds(197, 30, 143, 20);
-		getContentPane().add(textField_host);
-		textField_host.setColumns(10);
+		txtLocalhost = new JTextField();
+		txtLocalhost.setText("localhost");
+		txtLocalhost.setBounds(197, 30, 143, 20);
+		getContentPane().add(txtLocalhost);
+		txtLocalhost.setColumns(10);
 		
 		JLabel lblServerPort = new JLabel("Server Port");
 		lblServerPort.setBounds(79, 92, 67, 14);
 		getContentPane().add(lblServerPort);
 		
 		textField_port = new JTextField();
+		textField_port.setText("5000");
 		textField_port.setBounds(197, 89, 86, 20);
 		getContentPane().add(textField_port);
 		textField_port.setColumns(10);

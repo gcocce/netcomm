@@ -30,9 +30,12 @@ public class GameController extends Thread implements PacketListener, LostConnec
 	public GameController(GameModel gm, GameView gv){
 		
 		logger = Logger.getLogger("ClientLog");
+		logger.info("Se crea el controlador");
 		
 		this.gameModel=gm;
 		this.gameView=gv;
+		
+		gameView.setGameController(this);
 		
 		// Agregamos el Controlador como Observador de la Vista para el evento
 		// OnChatCreated
@@ -60,6 +63,10 @@ public class GameController extends Thread implements PacketListener, LostConnec
 		}
 		
 		return conectado;
+	}
+	
+	public void closeComm(){
+		comModule.cerrarConexion();
 	}
 	
 	public void run(){
@@ -106,10 +113,13 @@ public class GameController extends Thread implements PacketListener, LostConnec
 	
 	// A este metodo hay que llamar cuando se quiera cerrar el programa cliente
 	public void finish(){
+		
+		logger.info("Finaliza el controlador.");
+		
 		continuar=false;
 			
 		// Cerrar el view
-		gameView.finish();
+		//gameView.finish();
 		
 		// Cerrar el módulo de comunicaciones y todo lo que haga falta
 		comModule.cerrarConexion();
@@ -152,6 +162,8 @@ public class GameController extends Thread implements PacketListener, LostConnec
 			StartGamePacket lcp=(StartGamePacket)p;
 					
 			System.out.println("Start Game");
+			
+			gameView.startGame();
 		}		
 		
 		if(p.getType()==Packet.Tipo.GAME_MOVE){

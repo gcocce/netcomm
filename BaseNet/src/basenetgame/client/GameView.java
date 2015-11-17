@@ -23,6 +23,14 @@ public class GameView extends Thread implements ChatMessageReceivedListener{
 	private JFrame frame;
 	private Chat chatframe=null;
 	
+	JMenuBar menuBar;
+	
+	JMenu mnJuego;
+	JMenuItem mntmConectar;
+	JMenuItem mntmDesconectar;
+	JMenuItem mntmSalir;
+	
+	
 	// Atributos del modelo
 	private GameModel gameModel;
 	private GameController gameController;
@@ -37,7 +45,6 @@ public class GameView extends Thread implements ChatMessageReceivedListener{
     public void setGameController(GameController gcontroller){
     	gameController=gcontroller;
     }
-      
     
 	public GameView(GameModel gm){
 		
@@ -64,8 +71,6 @@ public class GameView extends Thread implements ChatMessageReceivedListener{
 		
 		while(continuar){
 			try {
-				
-				
 				
 				// Sleep de 0 milisegundos para dejar que el sistema operativo
 				// de paso a otro proceso o thread en este punto				
@@ -94,15 +99,15 @@ public class GameView extends Thread implements ChatMessageReceivedListener{
 				(int)Math.round(window_height/2-height/2), width, height );
 		
 		//frame.setBounds(100, 100, 800, 600);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		
-		JMenuBar menuBar = new JMenuBar();
+		menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
 		
-		JMenu mnJuego = new JMenu("Juego");
+		mnJuego = new JMenu("Juego");
 		menuBar.add(mnJuego);
 		
-		JMenuItem mntmConectar = new JMenuItem("Conectar");
+		mntmConectar = new JMenuItem("Conectar");
 		mntmConectar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -111,33 +116,50 @@ public class GameView extends Thread implements ChatMessageReceivedListener{
 				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				dialog.setVisible(true);				
 				
-				String host=dialog.getHost();
-				int port = dialog.getPort();
+				if (!dialog.isCancelar()){
+					String host=dialog.getHost();
+					int port = dialog.getPort();
+					
+					if(gameController.initComm(host, port)){
+						showConnected(true);
+						
+						
+						
+						mntmConectar.setEnabled(false);
+						mntmDesconectar.setEnabled(true);
+					}else{
+						showConnected(false);
+					}					
+				}
 				
 				dialog.dispose();
-				
-				if(gameController.initComm(host, port)){
-					showConnected(true);
-				}else{
-					showConnected(false);
-				}
+
 			}
 		});
 		mnJuego.add(mntmConectar);
 		
-		JMenuItem mntmDesconectar = new JMenuItem("Desconectar");
+		mntmDesconectar = new JMenuItem("Desconectar");
+		mntmDesconectar.setEnabled(false);
 		mntmDesconectar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
 				// Desconectar del servidor
+				gameController.closeComm();
+				
+				mntmConectar.setEnabled(true);
+				mntmDesconectar.setEnabled(false);
 			}
 		});
 		mnJuego.add(mntmDesconectar);
 		
-		JMenuItem mntmSalir = new JMenuItem("Salir");
+		mntmSalir = new JMenuItem("Salir");
 		mntmSalir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				System.exit(0);
+				
+				continuar=false;
+				
+				gameController.finish();
+				//System.exit(0);
 			}
 		});
 		mnJuego.add(mntmSalir);
@@ -156,12 +178,7 @@ public class GameView extends Thread implements ChatMessageReceivedListener{
 			public void actionPerformed(ActionEvent e) {
 				
 				// Mostrar la ventana de chat
-				if (chatframe==null){
-					chatframe = new Chat();
-					chatframe.setVisible(true);
-				}else{
-					chatframe.setVisible(true);
-				}
+				showChat();
 			}
 		});
 		mnChat.add(mntmMostrar);
@@ -169,6 +186,16 @@ public class GameView extends Thread implements ChatMessageReceivedListener{
 		frame.setVisible(true);
 
 	}	
+	
+	private void showChat(){
+		// Mostrar la ventana de chat
+		if (chatframe==null){
+			chatframe = new Chat(this);
+			chatframe.setVisible(true);
+		}else{
+			chatframe.setVisible(true);
+		}		
+	}
 
 	@Override
 	public void OnChatMessageReceived(Message m) {
@@ -203,8 +230,12 @@ public class GameView extends Thread implements ChatMessageReceivedListener{
 			JOptionPane.showMessageDialog(null, "Connection Fail",
 					"Connection", JOptionPane.ERROR_MESSAGE);
 		}
-		
-		
 	}
 
+	public void startGame(){
+		JOptionPane.showMessageDialog(null, "Comienza el Juego",
+				"Juego", JOptionPane.INFORMATION_MESSAGE);
+		
+		showChat();
+	}
 }

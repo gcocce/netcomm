@@ -16,12 +16,17 @@ import java.awt.event.KeyEvent;
 
 public class Chat extends JFrame {
 
+	private GameView gameView;
 	private JPanel contentPane;
 	private JTextArea chatText;
+	JTextArea chatMessage;
 	/**
 	 * Create the frame.
 	 */
-	public Chat() {
+	public Chat(GameView gv) {
+		
+		gameView=gv;
+		
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		
 		int width=300;
@@ -55,7 +60,7 @@ public class Chat extends JFrame {
 		scrollPane_1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		contentPane.add(scrollPane_1);
 		
-		JTextArea chatMessage = new JTextArea();
+		chatMessage = new JTextArea();
 		chatMessage.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent arg0) {
@@ -74,13 +79,19 @@ public class Chat extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				// Enviar mensaje de texto
+				String msg=chatMessage.getText();
+				chatMessage.setText("");
+				
+				gameView.buildChatMessage(msg);
+				
+				chatText.setText(chatText.getText()  + msg + "\n");
 			}
 		});
 		contentPane.add(chatButton);
 	}
 	
 	public void addMessage(String message){
-		chatText.setText(message);
+		chatText.setText(chatText.getText()  + message + "\n");
 	}
 
 }
