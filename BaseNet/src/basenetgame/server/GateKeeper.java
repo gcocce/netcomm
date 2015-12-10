@@ -27,8 +27,10 @@ public class GateKeeper extends Thread{
 	public void run(){
 		
 		Logger logger = Logger.getLogger("ServerLog");  
-		logger.info("GateKeeper iniciado. Escuchando conexiones...");
 		
+		logger.info("GateKeeper iniciado. Escuchando conexiones...");
+		System.out.println("GateKeeper iniciado. Escuchando conexiones...");
+			
 		while (!detener){
 		
 			try {

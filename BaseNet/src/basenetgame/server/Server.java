@@ -62,18 +62,25 @@ public class Server {
 		// Comprobamos los parametros
 		if (args.length<1){
 			System.out.println("\nFaltan parametros. Se esperaba el número de puerto!");
-			logger.info("Faltan parametros. Se esperaba el número de puerto!");
+			logger.severe("Faltan parametros. Se esperaba el número de puerto! Ejecutar desde la línea de comandos: java -jar servidor.jar PUERTO");
 			return;
 		}
 		
-		int puerto = Integer.parseInt(args[0]);	    
-
+		int puerto=0;
+		
+		try{
+			puerto = Integer.parseInt(args[0]);	    
+		}catch (NumberFormatException e){
+			System.out.println("\nEl puerto debe ser un número entre 1000 y 65000!");
+			logger.severe("El puerto debe ser un número entre 1000 y 65000!");
+			return;
+		}
 		//***********************************************************************
 		// Se inicia el servidor	
 	    logger.info("Se inicia el Servidor con puerto: " + puerto);
 		
 	    // Comprobamos el numero del puerto
-		if (puerto>1000 && puerto<65000){
+		if (puerto>=1000 && puerto<=65000){
 			
 			try {
 				serversocket=new ServerSocket(puerto);
@@ -81,6 +88,7 @@ public class Server {
 				if (serversocket!=null){
 
 					System.out.println("Server iniciado con puerto: " + puerto);
+					System.out.println("Para finalizar escriba: salir ");
 					logger.info("ServerSocket creado con puerto: " + puerto);
 					
 					iniciarServidor(serversocket);
